@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AvatarController : MonoBehaviour
 {
+    public Quaternion q;
     private Animator animatorComponent = null;
     protected Transform[] bones;
     protected Quaternion[] initialRotations;
     protected Quaternion[] localRotations;
+    public Slider Sx, Sy, Sz;
 
     protected virtual void MapBones()
     {
@@ -19,29 +22,43 @@ public class AvatarController : MonoBehaviour
             bones[boneIndex] = animatorComponent ? animatorComponent.GetBoneTransform(boneIndex2MecanimMap[boneIndex]) : null;
         }
     }
-        public void Awake()
+    
+    void Start()
     {
-        bones = new Transform[10];
+        bones = new Transform[30];
         initialRotations = new Quaternion[bones.Length];
         localRotations = new Quaternion[bones.Length];
         GetInitialRotations();
         animatorComponent = GetComponent<Animator>();
+        MapBones();
+        q = new Quaternion(100, 100, 100, 1);
+        for (int i = 0; i < 30; i++)
+        {
+            Debug.Log(bones[i] + " " + i.ToString()) ;
         }
+        Debug.Log(q);
+        //bones[5].rotation = Data2AvatarRot(q, 5);
 
-    public enum JointType : int
+    }
+    public void SliderSetX(float x)
     {
-        ShoulderLeft = 1,
-        ElbowLeft = 2,
-        ShoulderRight = 3,
-        ElbowRight = 4,
-        HipLeft = 5,
-        KneeLeft = 6,
-        AnkleLeft = 7,
-        HipRight = 8,
-        KneeRight = 9,
-        AnkleRight = 10,
+        q.x = x;
+        //Debug.Log(Sx.value.ToString() + "1");
+    }
+    public void SliderSetY(float y)
+    {
+        q.y = y;
+    }
+    public void SliderSetZ(float z)
+    {
+        q.z = z;
+    }
+    void Update()
+    {
+        bones[5].rotation = q;
     }
 
+    //does nothing??
     protected void GetInitialRotations()
     {
         for (int i = 0; i < bones.Length; i++)
@@ -53,12 +70,14 @@ public class AvatarController : MonoBehaviour
             }
         }
     }
+
     protected Quaternion Data2AvatarRot(Quaternion jointRotation, int boneIndex)
     {
         Quaternion newRotation = jointRotation * initialRotations[boneIndex];
 
         return newRotation;
     }
+    /*
     public Quaternion GetJointOrientation(int joint)
     {
      
@@ -75,6 +94,8 @@ public class AvatarController : MonoBehaviour
 
         return Quaternion.identity;
     }
+    */
+    /*
     protected void TransformBone(JointType joint, int boneIndex, bool flip)
     {
         Transform boneTransform = bones[boneIndex];
@@ -86,7 +107,7 @@ public class AvatarController : MonoBehaviour
         Quaternion newRotation = Data2AvatarRot(jointRotation, boneIndex);
             boneTransform.rotation = newRotation;
     }
-
+    */
 
 
     protected static readonly Dictionary<int, HumanBodyBones> boneIndex2MecanimMap = new Dictionary<int, HumanBodyBones>

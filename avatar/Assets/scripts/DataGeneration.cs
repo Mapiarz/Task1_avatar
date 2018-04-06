@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataGeneration : MonoBehaviour {
+public class DataGeneration : MonoBehaviour
+{
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }
+/*
+    Seperate gameobject that in fixed update generates constantly data, changing quaternions by one every frame. 
+    It is defined in the avatar to get quaternion DataGenerator.data and apply it to different bodyparts. Need to group bodyparts or select them as int number of joint.
+    Application is switched inside of AvatarController. Required methods:fixed update changing quaternions value. 
+
+     */
