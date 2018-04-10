@@ -4,11 +4,83 @@ using UnityEngine;
 
 public class DataGeneration : MonoBehaviour
 {
+    Quaternion q;
+    float x, y, z, border;
+    int limb;
+    bool generationSwitch;
+    private void Awake()
+    {
+        border = 90;
+        x = 0.0f;
+        y = 0.5f;
+        z = 0.5f;
+        generationSwitch = false;
+        limb = 1;
+    }
+    public void SetLimbLeftArm()
+    {
+        limb = 1;
+    }
 
+    public void SetLimbRightArm()
+    {
+        limb = 2;
+    }
+
+    public void SetLimbLeftLeg()
+    {
+        limb = 3;
+    }
+
+    public void SetLimbRightLeg()
+    {
+        limb = 4;
+    }
+
+    public void ChangeDirection()
+    {
+        if (generationSwitch)
+        {
+            generationSwitch = false;
+        }
+        else
+        {
+            generationSwitch = true;
+        }
+    }
+    void GenerateData()
+    {
+        if (x >= border)
+        {
+            generationSwitch = true;
+        }
+        if (x <= -border)
+        {
+            generationSwitch = false;
+        }
+        if (!generationSwitch)
+        {
+            x = x + 0.1f;
+            y = y + 0.1f;
+            z = z + 0.1f;
+        }
+        if (generationSwitch)
+        {
+            x = x - 0.1f;
+            y = y - 0.1f;
+            z = z - 0.1f;
+        }
+    }
+
+    public string GetData()
+    {
+        return (limb.ToString() + '|' + x.ToString() + '|' + y.ToString() + '|' + z.ToString());
+    }
+    private void Update()
+    {
+        GenerateData();
+
+
+    }
 }
-/*
-    Seperate gameobject that in fixed update generates constantly data, changing quaternions by one every frame. 
-    It is defined in the avatar to get quaternion DataGenerator.data and apply it to different bodyparts. Need to group bodyparts or select them as int number of joint.
-    Application is switched inside of AvatarController. Required methods:fixed update changing quaternions value. 
 
-     */
