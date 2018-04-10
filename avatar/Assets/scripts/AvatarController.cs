@@ -12,6 +12,9 @@ public class AvatarController : MonoBehaviour
     public DataGeneration dataSource;
     string[] data;
     int limb;
+    public bool manual;
+
+
     private void MapBones()
     {
         for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
@@ -22,21 +25,27 @@ public class AvatarController : MonoBehaviour
             bones[boneIndex] = animatorComponent ? animatorComponent.GetBoneTransform(boneIndex2MecanimMap[boneIndex]) : null;
         }
     }
-    
+
     void Start()
     {
+        manual = false;
         bones = new Transform[30];
         animatorComponent = GetComponent<Animator>();
         MapBones();
         for (int i = 0; i < 30; i++)
         {
-            Debug.Log(bones[i] + " " + i.ToString()) ;
+            Debug.Log(bones[i] + " " + i.ToString());
         }
     }
 
     void Update()
     {
-        ManageData();
+        if (!manual)
+        {
+            ManageData();
+        }
+        else
+            bones[limb].transform.localEulerAngles = q;
     }
 
     private void ManageData ()
@@ -65,7 +74,6 @@ public class AvatarController : MonoBehaviour
         q.x = float.Parse(data[1]);
         q.y = float.Parse(data[2]);
         q.z = float.Parse(data[3]);
-        Debug.Log(q);
         AssignData();
     }
 
@@ -121,6 +129,38 @@ public class AvatarController : MonoBehaviour
 
     }
 
+    public void ManualSwitch()
+    {
+        if (!manual)
+        {
+            manual = true;
+        }
+        else
+            manual = false;
+    }
+
+    public void SliderSetX(float x)
+    {
+        if (manual)
+        {
+            q.x = x;
+        }
+    }
+    public void SliderSetY(float y)
+    {
+        if (manual)
+        {
+            q.y = y;
+        }
+    }
+    public void SliderSetZ(float z)
+    {
+        if (manual)
+        {
+            q.z = z;
+        }
+    }
+
     protected static readonly Dictionary<int, HumanBodyBones> boneIndex2MecanimMap = new Dictionary<int, HumanBodyBones>
     {
         {0, HumanBodyBones.Hips},
@@ -159,18 +199,7 @@ public class AvatarController : MonoBehaviour
 //        {30, HumanBodyBones.RightThumbProximal},
     };
 
-    public void SliderSetX(float x)
-    {
-        q.x = x;
-    }
-    public void SliderSetY(float y)
-    {
-        q.y = y;
-    }
-    public void SliderSetZ(float z)
-    {
-        q.z = z;
-    }
+
 }
 
 

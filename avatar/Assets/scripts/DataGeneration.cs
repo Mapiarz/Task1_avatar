@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class DataGeneration : MonoBehaviour
 {
-    Quaternion q;
     float x, y, z, border;
     int limb;
     bool generationSwitch;
