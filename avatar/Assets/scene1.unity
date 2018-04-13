@@ -2587,8 +2587,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38877471112688d49b7cbab92b5f7bc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Button: {fileID: 1840615820}
-  Sliders: {fileID: 1652946419}
+  button: {fileID: 1840615820}
+  sliders: {fileID: 1652946419}
   boolToggle: 0
   controller: {fileID: 21472969}
 --- !u!114 &1715264079
