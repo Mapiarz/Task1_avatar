@@ -38,14 +38,7 @@ public class DataGeneration : MonoBehaviour
 
     public void ChangeDirection()
     {
-        if (generationSwitch)
-        {
-            generationSwitch = false;
-        }
-        else
-        {
-            generationSwitch = true;
-        }
+        generationSwitch = !generationSwitch;
     }
     void GenerateData()
     {

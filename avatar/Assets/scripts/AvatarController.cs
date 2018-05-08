@@ -1,34 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class AvatarController : MonoBehaviour
 {
-    public Vector3 q;
-    private Animator animatorComponent = null;
+    [SerializeField]
+    Vector3 eulerPosition;
+    [SerializeField]
+    DataGeneration dataSource;
+
     protected Transform[] bones;
-    //protected Quaternion[] initialRotations;
-    public DataGeneration dataSource;
+
+    Animator animatorComponent = null;
     string[] data;
     int limb;
-    public bool manual;
-
-
-    private void MapBones()
-    {
-        for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
-        {
-            if (!boneIndex2MecanimMap.ContainsKey(boneIndex))
-                continue;
-
-            bones[boneIndex] = animatorComponent ? animatorComponent.GetBoneTransform(boneIndex2MecanimMap[boneIndex]) : null;
-        }
-    }
+    public bool manualFlag;
 
     void Start()
     {
-        manual = false;
+        manualFlag = false;
         bones = new Transform[30];
         animatorComponent = GetComponent<Animator>();
         MapBones();
@@ -38,17 +27,30 @@ public class AvatarController : MonoBehaviour
         }
     }
 
+    void MapBones()
+    {
+        for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
+        {
+            if (!BoneIndex2MecanimMap.ContainsKey(boneIndex))
+                continue;
+
+            bones[boneIndex] = animatorComponent ? animatorComponent.GetBoneTransform(BoneIndex2MecanimMap[boneIndex]) : null;
+        }
+    }
+
+
+
     void Update()
     {
-        if (!manual)
+        if (!manualFlag)
         {
             ManageData();
         }
         else
-            bones[limb].transform.localEulerAngles = q;
+            bones[limb].transform.localEulerAngles = eulerPosition;
     }
 
-    private void ManageData ()
+    void ManageData ()
     {
         data = dataSource.GetData().Split('|');
         
@@ -71,38 +73,23 @@ public class AvatarController : MonoBehaviour
                 break;
         }
 
-        q.x = float.Parse(data[1]);
-        q.y = float.Parse(data[2]);
-        q.z = float.Parse(data[3]);
+        eulerPosition.x = float.Parse(data[1]);
+        eulerPosition.y = float.Parse(data[2]);
+        eulerPosition.z = float.Parse(data[3]);
         AssignData();
     }
 
-    private bool ChangeOfState(int joint)
+    bool ChangeOfPosition(int joint)
     {
-        float deltaX, deltaY, deltaZ;
+        Vector3 delta;
 
-        deltaX = q.x - PreviousRotation(joint).x;
+        delta = eulerPosition - GetPresentRotation(joint);
 
-        if (deltaX < 0f)
-        {
-            deltaX = -deltaX;
-        }
+        delta.x = Mathf.Abs(delta.x);
+        delta.y = Mathf.Abs(delta.y);
+        delta.z = Mathf.Abs(delta.z);
 
-        deltaY = q.y - PreviousRotation(joint).y;
-
-        if (deltaY < 0f)
-        {
-            deltaY = -deltaY;
-        }
-
-        deltaZ = q.z - PreviousRotation(joint).z;
-
-        if (deltaZ < 0f)
-        {
-            deltaZ = -deltaZ;
-        }
-
-        if (deltaX > 0.1 || deltaY > 0.1 || deltaZ > 0.1)//visible change
+        if (delta.x > 0.1 || delta.y > 0.1 || delta.z > 0.1) //visible change
         {
             return true;
         }
@@ -113,55 +100,48 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-    private void AssignData()
+    void AssignData()
     {
-        Debug.Log(ChangeOfState(limb));
-        if (ChangeOfState(limb))
+        Debug.Log(ChangeOfPosition(limb));
+        if (ChangeOfPosition(limb))
         {
-
-            bones[limb].transform.localEulerAngles = q;
+            bones[limb].transform.localEulerAngles = eulerPosition;
         }
     }
 
-    private Vector3 PreviousRotation(int i)
+    Vector3 GetPresentRotation(int i)
     {
         return bones[i].transform.localEulerAngles;
-
     }
 
     public void ManualSwitch()
     {
-        if (!manual)
-        {
-            manual = true;
-        }
-        else
-            manual = false;
+        manualFlag = !manualFlag;
     }
 
     public void SliderSetX(float x)
     {
-        if (manual)
+        if (manualFlag)
         {
-            q.x = x;
+            eulerPosition.x = x;
         }
     }
     public void SliderSetY(float y)
     {
-        if (manual)
+        if (manualFlag)
         {
-            q.y = y;
+            eulerPosition.y = y;
         }
     }
     public void SliderSetZ(float z)
     {
-        if (manual)
+        if (manualFlag)
         {
-            q.z = z;
+            eulerPosition.z = z;
         }
     }
 
-    protected static readonly Dictionary<int, HumanBodyBones> boneIndex2MecanimMap = new Dictionary<int, HumanBodyBones>
+    protected static readonly Dictionary<int, HumanBodyBones> BoneIndex2MecanimMap = new Dictionary<int, HumanBodyBones>
     {
         {0, HumanBodyBones.Hips},
         {1, HumanBodyBones.Spine},
