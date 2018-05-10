@@ -12,7 +12,7 @@ public class AvatarController : MonoBehaviour
 
     Animator animatorComponent = null;
     string[] data;
-    int limb;
+    HumanBodyBones limb;
     public bool manualFlag;
 
     void Start()
@@ -27,7 +27,7 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-    void MapBones()
+    void MapBones() //assigning GameObjects to a vector in a planned way
     {
         for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
         {
@@ -38,8 +38,6 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-
-
     void Update()
     {
         if (!manualFlag)
@@ -47,31 +45,14 @@ public class AvatarController : MonoBehaviour
             ManageData();
         }
         else
-            bones[limb].transform.localEulerAngles = eulerPosition;
+            bones[(int)limb].transform.localEulerAngles = eulerPosition;
     }
 
-    void ManageData ()
+    void ManageData () //aquiring data from a dataSource, converting data
     {
         data = dataSource.GetData().Split('|');
-        
-        switch (data[0])
-        {
-            case "1":
-                limb = 5;
-                break;
-            case "2":
-                limb = 11;
-                break;
-            case "3":
-                limb = 17;
-                break;
-            case "4":
-                limb = 21;
-                break;
-            default:
-                Debug.Log("incorrect value of limb");
-                break;
-        }
+
+        limb = (HumanBodyBones)int.Parse(data[0]);
 
         eulerPosition.x = float.Parse(data[1]);
         eulerPosition.y = float.Parse(data[2]);
@@ -79,7 +60,16 @@ public class AvatarController : MonoBehaviour
         AssignData();
     }
 
-    bool ChangeOfPosition(int joint)
+    void AssignData() //assiging data to specific bones
+    {
+        Debug.Log(ChangeOfPosition((int)limb));
+        if (ChangeOfPosition((int)limb))
+        {
+            bones[(int)limb].transform.localEulerAngles = eulerPosition;
+        }
+    }
+
+    bool ChangeOfPosition(int joint) // checking if there is visible change of position
     {
         Vector3 delta;
 
@@ -100,21 +90,14 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-    void AssignData()
-    {
-        Debug.Log(ChangeOfPosition(limb));
-        if (ChangeOfPosition(limb))
-        {
-            bones[limb].transform.localEulerAngles = eulerPosition;
-        }
-    }
 
-    Vector3 GetPresentRotation(int i)
+
+    Vector3 GetPresentRotation(int i) //reading present position
     {
         return bones[i].transform.localEulerAngles;
     }
 
-    public void ManualSwitch()
+    public void ManualSwitch() //methods required to manual control of the avatar
     {
         manualFlag = !manualFlag;
     }

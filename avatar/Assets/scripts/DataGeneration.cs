@@ -14,26 +14,26 @@ public class DataGeneration : MonoBehaviour
         y = 0.5f;
         z = 0.5f;
         generationSwitch = false;
-        limb = 1;
+        limb = 5;
     }
     public void SetLimbLeftArm()
     {
-        limb = 1;
+        limb = 5;
     }
 
     public void SetLimbRightArm()
     {
-        limb = 2;
+        limb = 11;
     }
 
     public void SetLimbLeftLeg()
     {
-        limb = 3;
+        limb = 17;
     }
 
     public void SetLimbRightLeg()
     {
-        limb = 4;
+        limb = 21;
     }
 
     public void ChangeDirection()
