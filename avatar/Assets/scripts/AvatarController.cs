@@ -7,20 +7,25 @@ public class AvatarController : MonoBehaviour
     Vector3 eulerPosition;
     [SerializeField]
     DataGeneration dataSource;
+    // [SerializeField] ... manualDataSource
+    IDataSource currentDataSource;
+    // TODO: Task after cleaning code up: Extract slider code into a separate data generation class (ManualUserDataGenerator)
 
+    // TODO: Remove protected - no point in it being protected
+    // TODO: Change to a Dictionary<HumanBodyBones, Transform>
     protected Transform[] bones;
 
     Animator animatorComponent = null;
     string[] data;
     HumanBodyBones limb;
-    public bool manualFlag;
+    public bool manualFlag;  // TODO: Fix public
 
     void Start()
     {
         manualFlag = false;
         bones = new Transform[30];
         animatorComponent = GetComponent<Animator>();
-        MapBones();
+        MapBones();  
         for (int i = 0; i < 30; i++)
         {
             Debug.Log(bones[i] + " " + i.ToString());
@@ -29,27 +34,36 @@ public class AvatarController : MonoBehaviour
 
     void MapBones() //assigning GameObjects to a vector in a planned way
     {
+        var bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
+
         for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
         {
-            if (!BoneIndex2MecanimMap.ContainsKey(boneIndex))
+            // TODO: Iterate over all enum values
+            // TODO: Use HumanBodyBones directly. Use System.Enum.GetValues
+            if ( !BoneIndex2MecanimMap.ContainsKey(boneIndex))
                 continue;
-
+            // TODO: Try to get bone transform. If available, add to dictionary, if not, skip
+            bonesDictionary.Add( HumanBodyBones.Head, null );
             bones[boneIndex] = animatorComponent ? animatorComponent.GetBoneTransform(BoneIndex2MecanimMap[boneIndex]) : null;
         }
     }
 
     void Update()
     {
-        if (!manualFlag)
+        if ( !manualFlag )
         {
             ManageData();
         }
         else
+        {
             bones[(int)limb].transform.localEulerAngles = eulerPosition;
+        }
     }
 
     void ManageData () //aquiring data from a dataSource, converting data
     {
+        // TODO: SImplify to getting and assigning data
+        var test = currentDataSource.GetData();
         data = dataSource.GetData().Split('|');
 
         limb = (HumanBodyBones)int.Parse(data[0]);
@@ -60,17 +74,31 @@ public class AvatarController : MonoBehaviour
         AssignData();
     }
 
+    public class DataFrame
+    {
+        public HumanBodyBones Limb { get; set; }
+        public Quaternion Rotation { get; set; }
+    }
+
     void AssignData() //assiging data to specific bones
     {
         Debug.Log(ChangeOfPosition((int)limb));
+        // TODO: Add comment that explains why this method is used in the first place
+        // Przyklad: Apply rotation only if it is visible, to conserve CPU
         if (ChangeOfPosition((int)limb))
         {
             bones[(int)limb].transform.localEulerAngles = eulerPosition;
         }
     }
 
-    bool ChangeOfPosition(int joint) // checking if there is visible change of position
+    // TODO: This optimalization is unneeded at this moment - remove it
+    /// <summary>
+    /// Returns true if new rotation for a joint is considered 'visible' - bigger than some arbitrary delta threshold, otherwise false
+    /// </summary>
+    /// <param name="joint">Limb enum</param>
+    bool ChangeOfPosition(int joint) // checking if there is visible change of rotation
     {
+        // TODO: Add comment that explains how this method works, e.g. when a rotation change is considered to be too small
         Vector3 delta;
 
         delta = eulerPosition - GetPresentRotation(joint);
@@ -90,8 +118,6 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-
-
     Vector3 GetPresentRotation(int i) //reading present position
     {
         return bones[i].transform.localEulerAngles;
@@ -101,6 +127,7 @@ public class AvatarController : MonoBehaviour
     {
         manualFlag = !manualFlag;
     }
+
 
     public void SliderSetX(float x)
     {
@@ -124,36 +151,37 @@ public class AvatarController : MonoBehaviour
         }
     }
 
+    // TODO: Get rid of the enum as it serves no real purpose
     protected static readonly Dictionary<int, HumanBodyBones> BoneIndex2MecanimMap = new Dictionary<int, HumanBodyBones>
     {
         {0, HumanBodyBones.Hips},
         {1, HumanBodyBones.Spine},
 //        {2, HumanBodyBones.Chest},
-		{3, HumanBodyBones.Neck},
+        {3, HumanBodyBones.Neck},
 //		{4, HumanBodyBones.Head},
-		
-		{5, HumanBodyBones.LeftUpperArm},
+        
+        {5, HumanBodyBones.LeftUpperArm},
         {6, HumanBodyBones.LeftLowerArm},
         {7, HumanBodyBones.LeftHand},
 
-		
-		{11, HumanBodyBones.RightUpperArm},
+        
+        {11, HumanBodyBones.RightUpperArm},
         {12, HumanBodyBones.RightLowerArm},
         {13, HumanBodyBones.RightHand},
 //		{14, HumanBodyBones.RightIndexProximal},
 //		{15, HumanBodyBones.RightIndexIntermediate},
 //		{16, HumanBodyBones.RightThumbProximal},
-		
-		{17, HumanBodyBones.LeftUpperLeg},
+        
+        {17, HumanBodyBones.LeftUpperLeg},
         {18, HumanBodyBones.LeftLowerLeg},
         {19, HumanBodyBones.LeftFoot},
 //		{20, HumanBodyBones.LeftToes},
-		
-		{21, HumanBodyBones.RightUpperLeg},
+        
+        {21, HumanBodyBones.RightUpperLeg},
         {22, HumanBodyBones.RightLowerLeg},
         {23, HumanBodyBones.RightFoot},
 //		{24, HumanBodyBones.RightToes},
-		
+        
 //		{25, HumanBodyBones.LeftShoulder},
 //        {26, HumanBodyBones.RightShoulder},
 //        {27, HumanBodyBones.LeftIndexProximal},

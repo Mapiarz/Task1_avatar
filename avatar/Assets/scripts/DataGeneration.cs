@@ -1,13 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class DataGeneration : MonoBehaviour
+// TODO: Rename to AutomaticDataGenerator
+public class DataGeneration : MonoBehaviour, IDataSource
 {
-    float x, y, z, border;
-    int limb;
-    bool generationSwitch;
-    private void Awake()
+    float x, y, z;
+    float border; // TODO: Rename border to something more clear, add a comment
+    int limb;  // TODO: Use HumanBodyBones instead of an int
+    bool generationSwitch;  // TODO: Clarify what this is, rename as needed, add comments as needed
+
+    void Awake()
     {
         border = 90;
         x = 0.0f;
@@ -16,9 +17,10 @@ public class DataGeneration : MonoBehaviour
         generationSwitch = false;
         limb = 5;
     }
+
     public void SetLimbLeftArm()
     {
-        limb = 5;
+        SetLimbTo( HumanBodyBones.LeftLowerArm );
     }
 
     public void SetLimbRightArm()
@@ -34,6 +36,11 @@ public class DataGeneration : MonoBehaviour
     public void SetLimbRightLeg()
     {
         limb = 21;
+    }
+
+    void SetLimbTo( HumanBodyBones limb )
+    {
+        limb = (int)limb;
     }
 
     public void ChangeDirection()
@@ -64,15 +71,22 @@ public class DataGeneration : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// TODO <see cref="generationSwitch"/> bla bla
+    /// </summary>
+    /// <returns></returns>
     public string GetData()
     {
-        return (limb.ToString() + '|' + x.ToString() + '|' + y.ToString() + '|' + z.ToString());
+        // 
+
+        // TODO: Get rid of data generation as a string, create a class (e.g. DataFrame) with quaternion and HumanBodyBones
+        //       To generate Quaternion from euler angles use Quaternion.Euler method
+        return ( limb.ToString() + '|' + x.ToString() + '|' + y.ToString() + '|' + z.ToString());
     }
-    private void Update()
+
+    void Update()
     {
         GenerateData();
-
-
     }
 }
 
