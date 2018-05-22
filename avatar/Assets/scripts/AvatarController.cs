@@ -8,18 +8,16 @@ public class AvatarController : MonoBehaviour
     [SerializeField]
     DataGeneration dataSource;
     // [SerializeField] ... manualDataSource
-    IDataSource currentDataSource;
+
     // TODO: Task after cleaning code up: Extract slider code into a separate data generation class (ManualUserDataGenerator)
 
-    // TODO: Remove protected - no point in it being protected
     // TODO: Change to a Dictionary<HumanBodyBones, Transform>
-    protected Transform[] bones;
-
+    IDataSource currentDataSource;
     Animator animatorComponent = null;
     string[] data;
     HumanBodyBones limb;
-    public bool manualFlag;  // TODO: Fix public
-
+    bool manualFlag;
+    Transform[] bones;
     void Start()
     {
         manualFlag = false;
@@ -32,7 +30,10 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-    void MapBones() //assigning GameObjects to a vector in a planned way
+    /// <summary>
+    /// finding and assigning all joints to specific transforms
+    /// </summary>
+    void MapBones()
     {
         var bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
 
@@ -60,7 +61,10 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-    void ManageData () //aquiring data from a dataSource, converting data
+    /// <summary>
+    /// aquiring data from a dataSource, then converting data and assigning them to transforms
+    /// </summary>
+    void ManageData ()
     {
         // TODO: SImplify to getting and assigning data
         var test = currentDataSource.GetData();
@@ -74,17 +78,13 @@ public class AvatarController : MonoBehaviour
         AssignData();
     }
 
-    public class DataFrame
+    /// <summary>
+    /// assiging data to specific bones
+    /// </summary>
+    void AssignData() 
     {
-        public HumanBodyBones Limb { get; set; }
-        public Quaternion Rotation { get; set; }
-    }
+        Debug.Log(ChangeOfPosition((int)limb)); //Apply rotation only if it is visible, to optimalize program
 
-    void AssignData() //assiging data to specific bones
-    {
-        Debug.Log(ChangeOfPosition((int)limb));
-        // TODO: Add comment that explains why this method is used in the first place
-        // Przyklad: Apply rotation only if it is visible, to conserve CPU
         if (ChangeOfPosition((int)limb))
         {
             bones[(int)limb].transform.localEulerAngles = eulerPosition;
@@ -95,10 +95,9 @@ public class AvatarController : MonoBehaviour
     /// <summary>
     /// Returns true if new rotation for a joint is considered 'visible' - bigger than some arbitrary delta threshold, otherwise false
     /// </summary>
-    /// <param name="joint">Limb enum</param>
-    bool ChangeOfPosition(int joint) // checking if there is visible change of rotation
+    bool ChangeOfPosition(int joint)
     {
-        // TODO: Add comment that explains how this method works, e.g. when a rotation change is considered to be too small
+        //method compares current position of every joint with its next position from data in vector3 eulerPosition. If differrence is greater than 0.1 (considered visible) then returns true and assigns data, else false and does nothing
         Vector3 delta;
 
         delta = eulerPosition - GetPresentRotation(joint);
@@ -118,17 +117,25 @@ public class AvatarController : MonoBehaviour
         }
     }
 
-    Vector3 GetPresentRotation(int i) //reading present position
+    /// <summary>
+    /// returns present position of specific joint
+    /// </summary>
+    Vector3 GetPresentRotation(int i)
     {
         return bones[i].transform.localEulerAngles;
     }
 
-    public void ManualSwitch() //methods required to manual control of the avatar
+    /// <summary>
+    /// turns on and off manual drive, activated in the interface by a user
+    /// </summary>
+    public void ManualSwitch()
     {
         manualFlag = !manualFlag;
     }
 
-
+    /// <summary>
+    /// methods required to manual control of the avatar
+    /// </summary>
     public void SliderSetX(float x)
     {
         if (manualFlag)
@@ -136,6 +143,7 @@ public class AvatarController : MonoBehaviour
             eulerPosition.x = x;
         }
     }
+
     public void SliderSetY(float y)
     {
         if (manualFlag)
@@ -143,6 +151,7 @@ public class AvatarController : MonoBehaviour
             eulerPosition.y = y;
         }
     }
+
     public void SliderSetZ(float z)
     {
         if (manualFlag)
@@ -190,7 +199,14 @@ public class AvatarController : MonoBehaviour
 //        {30, HumanBodyBones.RightThumbProximal},
     };
 
-
+    /// <summary>
+    /// class of data recieved by AvatarController
+    /// </summary>
+    public class DataFrame
+    {
+        public HumanBodyBones Limb { get; set; }
+        public Quaternion Rotation { get; set; }
+    }
 }
 
 
