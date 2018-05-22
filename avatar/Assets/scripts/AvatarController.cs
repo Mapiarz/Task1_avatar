@@ -11,53 +11,56 @@ public class AvatarController : MonoBehaviour
 
     // TODO: Task after cleaning code up: Extract slider code into a separate data generation class (ManualUserDataGenerator)
 
-    // TODO: Change to a Dictionary<HumanBodyBones, Transform>
     IDataSource currentDataSource;
-    Animator animatorComponent = null;
+    Animator animatorComponent;
     string[] data;
+    Dictionary<HumanBodyBones, Transform> bonesDictionary;
     HumanBodyBones limb;
     bool manualFlag;
-    Transform[] bones;
+    //Transform[] bones;
     void Start()
     {
+        bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
         manualFlag = false;
-        bones = new Transform[30];
+        //bones = new Transform[30];
         animatorComponent = GetComponent<Animator>();
         MapBones();  
-        for (int i = 0; i < 30; i++)
+        for (HumanBodyBones i = 0; (int)i < 30; i++)
         {
-            Debug.Log(bones[i] + " " + i.ToString());
+            Debug.Log(bonesDictionary[i]);
         }
     }
 
     /// <summary>
-    /// finding and assigning all joints to specific transforms
+    /// finding and assigning all bones to specific transforms inside a dictionary <HumanBodyBones, Transform>
     /// </summary>
     void MapBones()
     {
-        var bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
-
-        for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
+        foreach (var bone in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
         {
-            // TODO: Iterate over all enum values
-            // TODO: Use HumanBodyBones directly. Use System.Enum.GetValues
-            if ( !BoneIndex2MecanimMap.ContainsKey(boneIndex))
-                continue;
-            // TODO: Try to get bone transform. If available, add to dictionary, if not, skip
-            bonesDictionary.Add( HumanBodyBones.Head, null );
-            bones[boneIndex] = animatorComponent ? animatorComponent.GetBoneTransform(BoneIndex2MecanimMap[boneIndex]) : null;
+            if (animatorComponent != null & animatorComponent.GetBoneTransform(bone) != null)
+            {
+                bonesDictionary.Add(bone, animatorComponent.GetBoneTransform(bone));
+            }
+
+            else
+            {
+                bonesDictionary.Add(bone, null);
+            }
         }
+        Debug.Log("Maping Done");
     }
 
+   
     void Update()
     {
         if ( !manualFlag )
         {
-            ManageData();
+           ManageData();
         }
         else
         {
-            bones[(int)limb].transform.localEulerAngles = eulerPosition;
+            bonesDictionary[limb].transform.localEulerAngles = eulerPosition;
         }
     }
 
@@ -83,11 +86,11 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     void AssignData() 
     {
-        Debug.Log(ChangeOfPosition((int)limb)); //Apply rotation only if it is visible, to optimalize program
+        Debug.Log(ChangeOfPosition(limb)); //Apply rotation only if it is visible, to optimalize program
 
-        if (ChangeOfPosition((int)limb))
+        if (ChangeOfPosition(limb))
         {
-            bones[(int)limb].transform.localEulerAngles = eulerPosition;
+            bonesDictionary[limb].transform.localEulerAngles = eulerPosition;
         }
     }
 
@@ -95,12 +98,12 @@ public class AvatarController : MonoBehaviour
     /// <summary>
     /// Returns true if new rotation for a joint is considered 'visible' - bigger than some arbitrary delta threshold, otherwise false
     /// </summary>
-    bool ChangeOfPosition(int joint)
+    bool ChangeOfPosition(HumanBodyBones limb)
     {
         //method compares current position of every joint with its next position from data in vector3 eulerPosition. If differrence is greater than 0.1 (considered visible) then returns true and assigns data, else false and does nothing
         Vector3 delta;
 
-        delta = eulerPosition - GetPresentRotation(joint);
+        delta = eulerPosition - GetPresentRotation(limb);
 
         delta.x = Mathf.Abs(delta.x);
         delta.y = Mathf.Abs(delta.y);
@@ -120,9 +123,9 @@ public class AvatarController : MonoBehaviour
     /// <summary>
     /// returns present position of specific joint
     /// </summary>
-    Vector3 GetPresentRotation(int i)
+    Vector3 GetPresentRotation(HumanBodyBones limb)
     {
-        return bones[i].transform.localEulerAngles;
+        return bonesDictionary[limb].transform.localEulerAngles;
     }
 
     /// <summary>
@@ -159,45 +162,6 @@ public class AvatarController : MonoBehaviour
             eulerPosition.z = z;
         }
     }
-
-    // TODO: Get rid of the enum as it serves no real purpose
-    protected static readonly Dictionary<int, HumanBodyBones> BoneIndex2MecanimMap = new Dictionary<int, HumanBodyBones>
-    {
-        {0, HumanBodyBones.Hips},
-        {1, HumanBodyBones.Spine},
-//        {2, HumanBodyBones.Chest},
-        {3, HumanBodyBones.Neck},
-//		{4, HumanBodyBones.Head},
-        
-        {5, HumanBodyBones.LeftUpperArm},
-        {6, HumanBodyBones.LeftLowerArm},
-        {7, HumanBodyBones.LeftHand},
-
-        
-        {11, HumanBodyBones.RightUpperArm},
-        {12, HumanBodyBones.RightLowerArm},
-        {13, HumanBodyBones.RightHand},
-//		{14, HumanBodyBones.RightIndexProximal},
-//		{15, HumanBodyBones.RightIndexIntermediate},
-//		{16, HumanBodyBones.RightThumbProximal},
-        
-        {17, HumanBodyBones.LeftUpperLeg},
-        {18, HumanBodyBones.LeftLowerLeg},
-        {19, HumanBodyBones.LeftFoot},
-//		{20, HumanBodyBones.LeftToes},
-        
-        {21, HumanBodyBones.RightUpperLeg},
-        {22, HumanBodyBones.RightLowerLeg},
-        {23, HumanBodyBones.RightFoot},
-//		{24, HumanBodyBones.RightToes},
-        
-//		{25, HumanBodyBones.LeftShoulder},
-//        {26, HumanBodyBones.RightShoulder},
-//        {27, HumanBodyBones.LeftIndexProximal},
-//       {28, HumanBodyBones.RightIndexProximal},
-//        {29, HumanBodyBones.LeftThumbProximal},
-//        {30, HumanBodyBones.RightThumbProximal},
-    };
 
     /// <summary>
     /// class of data recieved by AvatarController
