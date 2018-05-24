@@ -196,9 +196,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1766f18fc7e52e54292c251fc0515ef9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  q: {x: 0, y: 0, z: 0}
-  dataSource: {fileID: 870317907}
-  manual: 0
+  eulerPosition: {x: 0, y: 0, z: 0}
+  generatedDataSource: {fileID: 870317907}
+  manualDataSource: {fileID: 1931787909}
 --- !u!1001 &58643240
 Prefab:
   m_ObjectHideFlags: 0
@@ -1103,7 +1103,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 21472969}
+      - m_Target: {fileID: 1931787909}
         m_MethodName: SliderSetX
         m_Mode: 0
         m_Arguments:
@@ -1461,6 +1461,17 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 870317907}
+        m_MethodName: SetLimbRightLeg
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1931787909}
         m_MethodName: SetLimbRightLeg
         m_Mode: 1
         m_Arguments:
@@ -2042,7 +2053,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 21472969}
+      - m_Target: {fileID: 1931787909}
         m_MethodName: SliderSetZ
         m_Mode: 0
         m_Arguments:
@@ -2153,6 +2164,17 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 870317907}
+        m_MethodName: SetLimbRightArm
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1931787909}
         m_MethodName: SetLimbRightArm
         m_Mode: 1
         m_Arguments:
@@ -2589,7 +2611,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1840615820}
   sliders: {fileID: 1652946419}
-  boolToggle: 0
   controller: {fileID: 21472969}
 --- !u!114 &1715264079
 MonoBehaviour:
@@ -2738,7 +2759,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 21472969}
+      - m_Target: {fileID: 1931787909}
         m_MethodName: SliderSetY
         m_Mode: 0
         m_Arguments:
@@ -3150,6 +3171,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1931787909}
+        m_MethodName: SetLimbLeftLeg
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1916076766
@@ -3259,6 +3291,46 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1918667203}
+--- !u!1 &1931787908
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1931787910}
+  - component: {fileID: 1931787909}
+  m_Layer: 0
+  m_Name: ManualDataGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1931787909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1931787908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b114001e356813a42ba75e429800a189, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1931787910
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1931787908}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.14241123, y: 0.9869993, z: 0.08123255}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1956839269
 GameObject:
   m_ObjectHideFlags: 0
@@ -3451,6 +3523,17 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 870317907}
+        m_MethodName: SetLimbLeftArm
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1931787909}
         m_MethodName: SetLimbLeftArm
         m_Mode: 1
         m_Arguments:

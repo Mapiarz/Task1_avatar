@@ -8,25 +8,23 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     /// a specific value of euler angle that is maximal available rotation, changes direction after reaching this limit
     /// </summary>
     float rotationMaximumValue;
-    HumanBodyBones limb;
     DataFrame data;
-    void Awake()
-    {
-        limb = HumanBodyBones.LeftLowerArm;
-        rotationMaximumValue = 90;
 
+    void Start()
+    {
+        data = new DataFrame();
+        data.limb = HumanBodyBones.LeftLowerArm;
+        rotationMaximumValue = 90;
         generatedValue.eulerAngles = new Vector3 (0.0f, 0.0f, 0.5f);
         delta.eulerAngles = new Vector3(0.1f, 0.1f, 0.1f);
-        data = new DataFrame();
-        
     }
 
     /// <summary>
     /// method that defines which limb is moved by the transform
     /// </summary>
-    void SetLimbTo(HumanBodyBones limb_)
+    void SetLimbTo(HumanBodyBones limb)
     {
-        limb = limb_;
+        data.limb = limb;
     }
 
     public void SetLimbLeftArm()
@@ -36,17 +34,17 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
 
     public void SetLimbRightArm()
     {
-        SetLimbTo(HumanBodyBones.RightUpperArm);
+        SetLimbTo(HumanBodyBones.RightLowerArm);
     }
 
     public void SetLimbLeftLeg()
     {
-        SetLimbTo(HumanBodyBones.LeftLowerLeg);
+        SetLimbTo(HumanBodyBones.LeftUpperLeg);
     }
 
     public void SetLimbRightLeg()
     {
-        SetLimbTo(HumanBodyBones.LeftUpperLeg);
+        SetLimbTo(HumanBodyBones.RightUpperLeg);
     }
 
     /// <summary>
@@ -75,7 +73,6 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
 
         generatedValue.eulerAngles = generatedValue.eulerAngles + delta.eulerAngles;
         data.rotation = generatedValue;
-        data.limb = limb;
     }
 
     public DataFrame GetData()

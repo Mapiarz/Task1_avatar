@@ -6,28 +6,24 @@ public class AvatarController : MonoBehaviour
     [SerializeField]
     Vector3 eulerPosition;
     [SerializeField]
-    AutomaticDataGenerator dataSource;
-    // [SerializeField] ... manualDataSource
+    AutomaticDataGenerator generatedDataSource;
+    [SerializeField]
+    ManualDataGenerator manualDataSource;
 
-    // TODO: Task after cleaning code up: Extract slider code into a separate data generation class (ManualUserDataGenerator)
     DataFrame data;
     IDataSource currentDataSource;
     Animator animatorComponent;
     Dictionary<HumanBodyBones, Transform> bonesDictionary;
-    HumanBodyBones limb;
-    bool manualFlag;
-    //Transform[] bones;
+    bool changeFlag;
+
     void Start()
     {
+        data = new DataFrame();
+        currentDataSource = generatedDataSource;
         bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
-        manualFlag = false;
-        //bones = new Transform[30];
+        changeFlag = false;
         animatorComponent = GetComponent<Animator>();
         MapBones();  
-        for (HumanBodyBones i = 0; (int)i < 30; i++)
-        {
-            Debug.Log(bonesDictionary[i]);
-        }
     }
 
     /// <summary>
@@ -50,17 +46,9 @@ public class AvatarController : MonoBehaviour
         Debug.Log("Maping Done");
     }
 
-   
     void Update()
     {
-        if ( !manualFlag )
-        {
-           ManageData();
-        }
-        else
-        {
-            bonesDictionary[limb].transform.localEulerAngles = eulerPosition;
-        }
+        ManageData();
     }
 
     /// <summary>
@@ -68,7 +56,6 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     void ManageData ()
     {
-        // TODO: SImplify to getting and assigning data
         data = currentDataSource.GetData();
         AssignData();
     }
@@ -79,78 +66,23 @@ public class AvatarController : MonoBehaviour
     void AssignData() 
     {
         bonesDictionary[data.limb].rotation = data.rotation;
-
-    }
-
-
-
-    /// <summary>
-    /// returns present position of specific joint
-    /// </summary>
-    Vector3 GetPresentRotation(HumanBodyBones limb)
-    {
-        return bonesDictionary[limb].transform.localEulerAngles;
+        Debug.Log(data.limb);
     }
 
     /// <summary>
-    /// turns on and off manual drive, activated in the interface by a user
+    /// changes the source of data, activated in the interface by a user
     /// </summary>
-    public void ManualSwitch()
+    public void ChangeDataSource()
     {
-        manualFlag = !manualFlag;
-    }
-
-    /// <summary>
-    /// methods required to manual control of the avatar
-    /// </summary>
-    public void SliderSetX(float x)
-    {
-        if (manualFlag)
+        changeFlag = !changeFlag;
+        if (changeFlag)
         {
-            eulerPosition.x = x;
+            currentDataSource = manualDataSource;
         }
-    }
 
-    public void SliderSetY(float y)
-    {
-        if (manualFlag)
+        if (!changeFlag)
         {
-            eulerPosition.y = y;
-        }
-    }
-
-    public void SliderSetZ(float z)
-    {
-        if (manualFlag)
-        {
-            eulerPosition.z = z;
+            currentDataSource = generatedDataSource;
         }
     }
 }
-
-/*    // TODO: This optimalization is unneeded at this moment - remove it
-    /// <summary>
-    /// Returns true if new rotation for a joint is considered 'visible' - bigger than some arbitrary delta threshold, otherwise false
-    /// </summary>
-    bool ChangeOfPosition(HumanBodyBones limb)
-    {
-        //method compares current position of every joint with its next position from data in vector3 eulerPosition. If differrence is greater than 0.1 (considered visible) then returns true and assigns data, else false and does nothing
-        Vector3 delta;
-
-        delta = eulerPosition - GetPresentRotation(limb);
-
-        delta.x = Mathf.Abs(delta.x);
-        delta.y = Mathf.Abs(delta.y);
-        delta.z = Mathf.Abs(delta.z);
-
-        if (delta.x > 0.1 || delta.y > 0.1 || delta.z > 0.1) //visible change
-        {
-            return true;
-        }
-
-        else
-        {
-            return false;
-        }
-    }
-    */
