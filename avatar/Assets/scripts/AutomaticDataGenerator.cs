@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 
 // TODO: Rename to AutomaticDataGenerator
-public class DataGeneration : MonoBehaviour, IDataSource
+public class AutomaticDataGenerator : MonoBehaviour, IDataSource
 {
-    Vector3 delta, generatedValue;
+    Quaternion delta, generatedValue;
     /// <summary>
     /// a specific value of euler angle that is maximal available rotation, changes direction after reaching this limit
     /// </summary>
     float rotationMaximumValue;
-    int limb;  // TODO: Use HumanBodyBones instead of an int
-
+    HumanBodyBones limb;
+    DataFrame data;
     void Awake()
     {
+        limb = HumanBodyBones.LeftLowerArm;
         rotationMaximumValue = 90;
-        generatedValue = new Vector3 (0.0f, 0.0f, 0.5f);
-        limb = 5;
-        delta = new Vector3(0.1f, 0.1f, 0.1f);
+
+        generatedValue.eulerAngles = new Vector3 (0.0f, 0.0f, 0.5f);
+        delta.eulerAngles = new Vector3(0.1f, 0.1f, 0.1f);
+        data = new DataFrame();
+        
     }
 
     /// <summary>
@@ -23,7 +26,7 @@ public class DataGeneration : MonoBehaviour, IDataSource
     /// </summary>
     void SetLimbTo(HumanBodyBones limb_)
     {
-        limb = (int)limb_;
+        limb = limb_;
     }
 
     public void SetLimbLeftArm()
@@ -46,14 +49,12 @@ public class DataGeneration : MonoBehaviour, IDataSource
         SetLimbTo(HumanBodyBones.LeftUpperLeg);
     }
 
-
-
     /// <summary>
     /// changes direction of rotation
     /// </summary>
     public void ChangeDirection()
     {
-        delta = -delta;
+        delta.eulerAngles = -delta.eulerAngles;
     }
 
     /// <summary>
@@ -72,17 +73,14 @@ public class DataGeneration : MonoBehaviour, IDataSource
             ChangeDirection();
         }
 
-        generatedValue = generatedValue + delta;
-
+        generatedValue.eulerAngles = generatedValue.eulerAngles + delta.eulerAngles;
+        data.rotation = generatedValue;
+        data.limb = limb;
     }
 
-    public string GetData()
+    public DataFrame GetData()
     {
-        // 
-
-        // TODO: Get rid of data generation as a string, create a class (e.g. DataFrame) with quaternion and HumanBodyBones
-        //       To generate Quaternion from euler angles use Quaternion.Euler method
-        return ( limb.ToString() + '|' + generatedValue.x.ToString() + '|' + generatedValue.y.ToString() + '|' + generatedValue.z.ToString());
+        return (data);
     }
 
     void Update()

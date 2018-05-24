@@ -1,4 +1,4 @@
 ﻿public interface IDataSource
 {
-    string GetData();
+    DataFrame GetData();
 }

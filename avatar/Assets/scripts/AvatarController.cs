@@ -6,14 +6,13 @@ public class AvatarController : MonoBehaviour
     [SerializeField]
     Vector3 eulerPosition;
     [SerializeField]
-    DataGeneration dataSource;
+    AutomaticDataGenerator dataSource;
     // [SerializeField] ... manualDataSource
 
     // TODO: Task after cleaning code up: Extract slider code into a separate data generation class (ManualUserDataGenerator)
-
+    DataFrame data;
     IDataSource currentDataSource;
     Animator animatorComponent;
-    string[] data;
     Dictionary<HumanBodyBones, Transform> bonesDictionary;
     HumanBodyBones limb;
     bool manualFlag;
@@ -70,14 +69,7 @@ public class AvatarController : MonoBehaviour
     void ManageData ()
     {
         // TODO: SImplify to getting and assigning data
-        var test = currentDataSource.GetData();
-        data = dataSource.GetData().Split('|');
-
-        limb = (HumanBodyBones)int.Parse(data[0]);
-
-        eulerPosition.x = float.Parse(data[1]);
-        eulerPosition.y = float.Parse(data[2]);
-        eulerPosition.z = float.Parse(data[3]);
+        data = currentDataSource.GetData();
         AssignData();
     }
 
@@ -86,39 +78,11 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     void AssignData() 
     {
-        Debug.Log(ChangeOfPosition(limb)); //Apply rotation only if it is visible, to optimalize program
+        bonesDictionary[data.limb].rotation = data.rotation;
 
-        if (ChangeOfPosition(limb))
-        {
-            bonesDictionary[limb].transform.localEulerAngles = eulerPosition;
-        }
     }
 
-    // TODO: This optimalization is unneeded at this moment - remove it
-    /// <summary>
-    /// Returns true if new rotation for a joint is considered 'visible' - bigger than some arbitrary delta threshold, otherwise false
-    /// </summary>
-    bool ChangeOfPosition(HumanBodyBones limb)
-    {
-        //method compares current position of every joint with its next position from data in vector3 eulerPosition. If differrence is greater than 0.1 (considered visible) then returns true and assigns data, else false and does nothing
-        Vector3 delta;
 
-        delta = eulerPosition - GetPresentRotation(limb);
-
-        delta.x = Mathf.Abs(delta.x);
-        delta.y = Mathf.Abs(delta.y);
-        delta.z = Mathf.Abs(delta.z);
-
-        if (delta.x > 0.1 || delta.y > 0.1 || delta.z > 0.1) //visible change
-        {
-            return true;
-        }
-
-        else
-        {
-            return false;
-        }
-    }
 
     /// <summary>
     /// returns present position of specific joint
@@ -162,15 +126,31 @@ public class AvatarController : MonoBehaviour
             eulerPosition.z = z;
         }
     }
-
-    /// <summary>
-    /// class of data recieved by AvatarController
-    /// </summary>
-    public class DataFrame
-    {
-        public HumanBodyBones Limb { get; set; }
-        public Quaternion Rotation { get; set; }
-    }
 }
 
+/*    // TODO: This optimalization is unneeded at this moment - remove it
+    /// <summary>
+    /// Returns true if new rotation for a joint is considered 'visible' - bigger than some arbitrary delta threshold, otherwise false
+    /// </summary>
+    bool ChangeOfPosition(HumanBodyBones limb)
+    {
+        //method compares current position of every joint with its next position from data in vector3 eulerPosition. If differrence is greater than 0.1 (considered visible) then returns true and assigns data, else false and does nothing
+        Vector3 delta;
 
+        delta = eulerPosition - GetPresentRotation(limb);
+
+        delta.x = Mathf.Abs(delta.x);
+        delta.y = Mathf.Abs(delta.y);
+        delta.z = Mathf.Abs(delta.z);
+
+        if (delta.x > 0.1 || delta.y > 0.1 || delta.z > 0.1) //visible change
+        {
+            return true;
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+    */
