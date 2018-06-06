@@ -68,8 +68,7 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
             ChangeDirection();
         }
 
-        generatedValue.eulerAngles = generatedValue.eulerAngles + delta.eulerAngles;
-        data.rotation = generatedValue;
+        data.rotation = Quaternion.Euler(data.rotation.eulerAngles + delta.eulerAngles);
     }
 
     public DataFrame GetData()

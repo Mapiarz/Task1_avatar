@@ -14,14 +14,12 @@ public class AvatarController : MonoBehaviour
     IDataSource currentDataSource;
     Animator animatorComponent;
     Dictionary<HumanBodyBones, Transform> bonesDictionary;
-    bool changeFlag;
 
     void Start()
     {
         data = new DataFrame();
         currentDataSource = generatedDataSource;
         bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
-        changeFlag = false;
         animatorComponent = GetComponent<Animator>();
         MapBones();  
     }
@@ -43,20 +41,10 @@ public class AvatarController : MonoBehaviour
                 bonesDictionary.Add(bone, null);
             }
         }
-        Debug.Log("Maping Done");
     }
 
     void Update()
     {
-        ManageData();
-    }
-
-    /// <summary>
-    /// aquiring data from a dataSource, then converting data and assigning them to transforms
-    /// </summary>
-    void ManageData ()
-    {
-        data = currentDataSource.GetData();
         AssignData();
     }
 
@@ -65,8 +53,7 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     void AssignData() 
     {
-        bonesDictionary[data.limb].rotation = data.rotation;
-        Debug.Log(data.limb);
+        bonesDictionary[currentDataSource.GetData().limb].rotation = currentDataSource.GetData().rotation;
     }
 
     /// <summary>
@@ -74,13 +61,12 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     public void ChangeDataSource()
     {
-        changeFlag = !changeFlag;
-        if (changeFlag)
+        if ((object)currentDataSource == generatedDataSource)
         {
             currentDataSource = manualDataSource;
         }
 
-        if (!changeFlag)
+        else
         {
             currentDataSource = generatedDataSource;
         }

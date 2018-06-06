@@ -20,26 +20,32 @@ public class ManualDataGenerator : MonoBehaviour, IDataSource
     public void SliderSetX(float x)
     {
         eulerPosition.x = x;
+        data.rotation = Quaternion.Euler(eulerPosition);
     }
 
     public void SliderSetY(float y)
     {
         eulerPosition.y = y;
+        data.rotation = Quaternion.Euler(eulerPosition);
     }
 
     public void SliderSetZ(float z)
     {
         eulerPosition.z = z;
+        data.rotation = Quaternion.Euler(eulerPosition);
     }
 
     /// <summary>
     /// method that defines which limb is moved by the transform
     /// </summary>
-    void SetLimbTo(HumanBodyBones limb_)
+    void SetLimbTo(HumanBodyBones limb)
     {
-        data.limb = limb_;
+        data.limb = limb;
     }
 
+    /// <summary>
+    /// public methods due to UI button callback
+    /// </summary>
     public void SetLimbLeftArm()
     {
         SetLimbTo(HumanBodyBones.LeftLowerArm);
@@ -62,8 +68,6 @@ public class ManualDataGenerator : MonoBehaviour, IDataSource
 
     public DataFrame GetData()
     {
-        eulerQuaternion.eulerAngles = eulerPosition;
-        data.rotation = eulerQuaternion;
         return data;
     }
 }
