@@ -64,6 +64,6 @@ public class ManualDataGenerator : MonoBehaviour, IDataSource
     {
         eulerQuaternion.eulerAngles = eulerPosition;
         data.rotation = eulerQuaternion;
-        return (data);
+        return data;
     }
 }

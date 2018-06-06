@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-// TODO: Rename to AutomaticDataGenerator
 public class AutomaticDataGenerator : MonoBehaviour, IDataSource
 {
     Quaternion delta, generatedValue;
@@ -27,6 +26,9 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
         data.limb = limb;
     }
 
+    /// <summary>
+    /// public methods due to UI button callback
+    /// </summary>
     public void SetLimbLeftArm()
     {
         SetLimbTo( HumanBodyBones.LeftLowerArm );
@@ -61,12 +63,7 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     /// </summary>
     void GenerateData()
     {
-        if (generatedValue.x >= rotationMaximumValue)
-        {
-            ChangeDirection();
-        }
-
-        if (generatedValue.x <= -rotationMaximumValue)
+        if (generatedValue.x >= rotationMaximumValue || generatedValue.x <= -rotationMaximumValue)
         {
             ChangeDirection();
         }
@@ -77,7 +74,7 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
 
     public DataFrame GetData()
     {
-        return (data);
+        return data;
     }
 
     void Update()
