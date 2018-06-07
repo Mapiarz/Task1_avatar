@@ -5,7 +5,7 @@
 /// </summary>
 public class DataFrame
 {
-    public HumanBodyBones limb { get; set; }
-    public Quaternion rotation { get; set; }
+    public HumanBodyBones Limb { get; set; }
+    public Quaternion Rotation { get; set; }
 }
 

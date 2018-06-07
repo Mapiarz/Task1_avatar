@@ -4,20 +4,16 @@ using UnityEngine;
 public class AvatarController : MonoBehaviour
 {
     [SerializeField]
-    Vector3 eulerPosition;
-    [SerializeField]
     AutomaticDataGenerator generatedDataSource;
     [SerializeField]
     ManualDataGenerator manualDataSource;
 
-    DataFrame data;
     IDataSource currentDataSource;
     Animator animatorComponent;
     Dictionary<HumanBodyBones, Transform> bonesDictionary;
 
     void Start()
     {
-        data = new DataFrame();
         currentDataSource = generatedDataSource;
         bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
         animatorComponent = GetComponent<Animator>();
@@ -53,7 +49,7 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     void AssignData() 
     {
-        bonesDictionary[currentDataSource.GetData().limb].rotation = currentDataSource.GetData().rotation;
+        bonesDictionary[currentDataSource.GetData().Limb].rotation = currentDataSource.GetData().Rotation;
     }
 
     /// <summary>

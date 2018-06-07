@@ -3,15 +3,13 @@
 public class ManualDataGenerator : MonoBehaviour, IDataSource
 {
     DataFrame data;
-    Quaternion eulerQuaternion;
     Vector3 eulerPosition;
 
     void Start()
     {
         data = new DataFrame();
-        data.limb = HumanBodyBones.LeftLowerArm;
+        data.Limb = HumanBodyBones.LeftLowerArm;
         eulerPosition = new Vector3();
-        eulerQuaternion = new Quaternion();
     }
 
     /// <summary>
@@ -20,19 +18,19 @@ public class ManualDataGenerator : MonoBehaviour, IDataSource
     public void SliderSetX(float x)
     {
         eulerPosition.x = x;
-        data.rotation = Quaternion.Euler(eulerPosition);
+        data.Rotation = Quaternion.Euler(eulerPosition);
     }
 
     public void SliderSetY(float y)
     {
         eulerPosition.y = y;
-        data.rotation = Quaternion.Euler(eulerPosition);
+        data.Rotation = Quaternion.Euler(eulerPosition);
     }
 
     public void SliderSetZ(float z)
     {
         eulerPosition.z = z;
-        data.rotation = Quaternion.Euler(eulerPosition);
+        data.Rotation = Quaternion.Euler(eulerPosition);
     }
 
     /// <summary>
@@ -40,7 +38,7 @@ public class ManualDataGenerator : MonoBehaviour, IDataSource
     /// </summary>
     void SetLimbTo(HumanBodyBones limb)
     {
-        data.limb = limb;
+        data.Limb = limb;
     }
 
     /// <summary>
