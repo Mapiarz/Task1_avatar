@@ -13,7 +13,7 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     {
         data = new DataFrame();
         data.Limb = HumanBodyBones.LeftLowerArm;
-        rotationMaximumValue = 80;
+        rotationMaximumValue = 90;
         delta = Quaternion.Euler(new Vector3(0.5f, 0.5f, 0.5f));
     }
 
@@ -49,7 +49,7 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     }
 
     /// <summary>
-    /// changes direction of rotation, used in class and in UI callback
+    /// changes direction of rotation, used inside class and in UI callback
     /// </summary>
     public void ChangeDirection()
     {

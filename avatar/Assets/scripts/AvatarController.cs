@@ -45,7 +45,8 @@ public class AvatarController : MonoBehaviour
     }
 
     /// <summary>
-    /// assiging data to specific bones
+    /// assiging data to specific bones, got from Source.GetData()
+    /// <see cref="IDataSource"/>
     /// </summary>
     void AssignData() 
     {
@@ -57,7 +58,7 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     public void ChangeDataSource()
     {
-        if ((object)currentDataSource == generatedDataSource)
+        if (currentDataSource == generatedDataSource)
         {
             currentDataSource = manualDataSource;
         }
