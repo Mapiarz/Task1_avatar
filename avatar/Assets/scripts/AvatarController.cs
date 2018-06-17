@@ -4,24 +4,18 @@ using UnityEngine;
 public class AvatarController : MonoBehaviour
 {
     [SerializeField]
-    Vector3 eulerPosition;
-    [SerializeField]
     AutomaticDataGenerator generatedDataSource;
     [SerializeField]
     ManualDataGenerator manualDataSource;
 
-    DataFrame data;
     IDataSource currentDataSource;
     Animator animatorComponent;
     Dictionary<HumanBodyBones, Transform> bonesDictionary;
-    bool changeFlag;
 
     void Start()
     {
-        data = new DataFrame();
         currentDataSource = generatedDataSource;
         bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
-        changeFlag = false;
         animatorComponent = GetComponent<Animator>();
         MapBones();  
     }
@@ -43,30 +37,20 @@ public class AvatarController : MonoBehaviour
                 bonesDictionary.Add(bone, null);
             }
         }
-        Debug.Log("Maping Done");
     }
 
     void Update()
     {
-        ManageData();
-    }
-
-    /// <summary>
-    /// aquiring data from a dataSource, then converting data and assigning them to transforms
-    /// </summary>
-    void ManageData ()
-    {
-        data = currentDataSource.GetData();
         AssignData();
     }
 
     /// <summary>
-    /// assiging data to specific bones
+    /// assiging data to specific bones, got from Source.GetData()
+    /// <see cref="IDataSource"/>
     /// </summary>
     void AssignData() 
     {
-        bonesDictionary[data.limb].rotation = data.rotation;
-        Debug.Log(data.limb);
+        bonesDictionary[currentDataSource.GetData().Limb].rotation = currentDataSource.GetData().Rotation;
     }
 
     /// <summary>
@@ -74,13 +58,12 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     public void ChangeDataSource()
     {
-        changeFlag = !changeFlag;
-        if (changeFlag)
+        if (currentDataSource == generatedDataSource)
         {
             currentDataSource = manualDataSource;
         }
 
-        if (!changeFlag)
+        else
         {
             currentDataSource = generatedDataSource;
         }

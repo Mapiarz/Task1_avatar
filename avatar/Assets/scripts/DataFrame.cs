@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// class of data recieved by AvatarController
 /// </summary>
 public class DataFrame
 {
-    public HumanBodyBones limb { get; set; }
-    public Quaternion rotation { get; set; }
+    public HumanBodyBones Limb { get; set; }
+    public Quaternion Rotation { get; set; }
 }
 

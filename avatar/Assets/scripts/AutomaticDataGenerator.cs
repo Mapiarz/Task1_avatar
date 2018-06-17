@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
-// TODO: Rename to AutomaticDataGenerator
 public class AutomaticDataGenerator : MonoBehaviour, IDataSource
 {
-    Quaternion delta, generatedValue;
+    Quaternion delta;
     /// <summary>
     /// a specific value of euler angle that is maximal available rotation, changes direction after reaching this limit
     /// </summary>
@@ -13,10 +12,9 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     void Start()
     {
         data = new DataFrame();
-        data.limb = HumanBodyBones.LeftLowerArm;
+        data.Limb = HumanBodyBones.LeftLowerArm;
         rotationMaximumValue = 90;
-        generatedValue.eulerAngles = new Vector3 (0.0f, 0.0f, 0.5f);
-        delta.eulerAngles = new Vector3(0.1f, 0.1f, 0.1f);
+        delta = Quaternion.Euler(new Vector3(0.5f, 0.5f, 0.5f));
     }
 
     /// <summary>
@@ -24,9 +22,12 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     /// </summary>
     void SetLimbTo(HumanBodyBones limb)
     {
-        data.limb = limb;
+        data.Limb = limb;
     }
 
+    /// <summary>
+    /// public methods due to UI button callback
+    /// </summary>
     public void SetLimbLeftArm()
     {
         SetLimbTo( HumanBodyBones.LeftLowerArm );
@@ -48,7 +49,7 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     }
 
     /// <summary>
-    /// changes direction of rotation
+    /// changes direction of rotation, used inside class and in UI callback
     /// </summary>
     public void ChangeDirection()
     {
@@ -61,23 +62,17 @@ public class AutomaticDataGenerator : MonoBehaviour, IDataSource
     /// </summary>
     void GenerateData()
     {
-        if (generatedValue.x >= rotationMaximumValue)
+        if (data.Rotation.eulerAngles.x >= rotationMaximumValue || data.Rotation.eulerAngles.x <= -rotationMaximumValue)
         {
             ChangeDirection();
         }
 
-        if (generatedValue.x <= -rotationMaximumValue)
-        {
-            ChangeDirection();
-        }
-
-        generatedValue.eulerAngles = generatedValue.eulerAngles + delta.eulerAngles;
-        data.rotation = generatedValue;
+        data.Rotation = Quaternion.Euler(data.Rotation.eulerAngles + delta.eulerAngles);
     }
 
     public DataFrame GetData()
     {
-        return (data);
+        return data;
     }
 
     void Update()
