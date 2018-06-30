@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.57481706, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -185,13 +185,18 @@ CanvasRenderer:
 GameObject:
   m_PrefabParentObject: {fileID: 100176, guid: ae23d50304c93b9418b65cec8f9fe954, type: 3}
   m_PrefabInternal: {fileID: 58643240}
+--- !u!95 &21472967 stripped
+Animator:
+  m_PrefabParentObject: {fileID: 9500000, guid: ae23d50304c93b9418b65cec8f9fe954,
+    type: 3}
+  m_PrefabInternal: {fileID: 58643240}
 --- !u!114 &21472969
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 21472966}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1766f18fc7e52e54292c251fc0515ef9, type: 3}
   m_Name: 
@@ -1338,8 +1343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sensorManager: {fileID: 785980630}
-  cubePrefab: {fileID: 0}
-  cubeInsets: {x: 0, y: 0}
+  animatorComponent: {fileID: 21472967}
 --- !u!114 &785980630
 MonoBehaviour:
   m_ObjectHideFlags: 0

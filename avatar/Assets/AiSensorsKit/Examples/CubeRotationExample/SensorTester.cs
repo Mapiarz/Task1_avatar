@@ -18,6 +18,7 @@ public class SensorTester : MonoBehaviour
     /// </summary>
     void MapBones()
     {
+        Debug.Log("maping bones");
         bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
         foreach (var bone in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
         {
@@ -36,6 +37,7 @@ public class SensorTester : MonoBehaviour
             { 10000, bonesDictionary[HumanBodyBones.LeftUpperArm] },
             { 10001, bonesDictionary[HumanBodyBones.LeftLowerArm] }
         };
+        Debug.Log(PortBonesDictionary[10000]);
     }
 
     public void CreateServer()
@@ -70,15 +72,18 @@ public class SensorTester : MonoBehaviour
 
     void AssignSensors( IList<ISensorInfo> infos )
     {
+        Debug.Log("assigning sensors");
         var handles = sensorManager.ConnectToSensors( infos );
 
         MapBones();
 
         for ( int i = 0; i < handles.Count; i++ )
         {
-            if (handles[i].GetHashCode() == 10000 || handles[i].GetHashCode() == 10001)
+            Debug.Log(handles[i].GetHashCode());
+            if (infos[i].GetHashCode() == 10000 || infos[i].GetHashCode() == 10001)
             {
-                StartCoroutine(RotateBone(handles[i], PortBonesDictionary[handles[i].GetHashCode()]));
+                Debug.Log("one is correct");
+                StartCoroutine(RotateBone(handles[i], PortBonesDictionary[infos[i].GetHashCode()]));
             }
         }
     }
