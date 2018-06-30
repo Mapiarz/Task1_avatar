@@ -11,6 +11,7 @@ public class AvatarController : MonoBehaviour
     IDataSource currentDataSource;
     Animator animatorComponent;
     Dictionary<HumanBodyBones, Transform> bonesDictionary;
+    Dictionary<int, Transform> PortBonesDictionary;
 
     void Start()
     {
@@ -37,6 +38,12 @@ public class AvatarController : MonoBehaviour
                 bonesDictionary.Add(bone, null);
             }
         }
+
+        PortBonesDictionary = new Dictionary<int, Transform>
+        {
+            { 10000, bonesDictionary[HumanBodyBones.LeftUpperArm] },
+            { 10001, bonesDictionary[HumanBodyBones.LeftLowerArm] }
+        };
     }
 
     void Update()
