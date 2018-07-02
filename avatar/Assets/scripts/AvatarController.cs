@@ -1,31 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using Aisens;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AvatarController : MonoBehaviour
 {
-    [SerializeField]
-    AutomaticDataGenerator generatedDataSource;
-    [SerializeField]
-    ManualDataGenerator manualDataSource;
+    [SerializeField] SensorManagerBehaviour sensorManager;
+    [SerializeField] Animator animatorComponent;
 
-    IDataSource currentDataSource;
-    Animator animatorComponent;
+    Coroutine discoveryCoroutine;
+    /// <summary>
+    /// dictionary containing all bones inside avatar
+    /// </summary>
     Dictionary<HumanBodyBones, Transform> bonesDictionary;
+    /// <summary>
+    /// dictionary containing all pones controlled by specific sensors, edited
+    /// </summary>
     Dictionary<int, Transform> PortBonesDictionary;
 
-    void Start()
-    {
-        currentDataSource = generatedDataSource;
-        bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
-        animatorComponent = GetComponent<Animator>();
-        MapBones();  
-    }
-
     /// <summary>
-    /// finding and assigning all bones to specific transforms inside a dictionary <HumanBodyBones, Transform>
+    /// finding and assigning all bones to specific transforms inside a dictionary <see cref="bonesDictionary"/> <HumanBodyBones, Transform>
+    /// assigning specific bones from global dictionary to sensro dictionary <see cref="PortBonesDictionary"/>
     /// </summary>
     void MapBones()
     {
+        Debug.Log("maping bones");
+
+        bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
+        //collects one by one bones from HumanBodyBones and Avatar, combines them, also if null
         foreach (var bone in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
         {
             if (animatorComponent != null & animatorComponent.GetBoneTransform(bone) != null)
@@ -38,7 +40,7 @@ public class AvatarController : MonoBehaviour
                 bonesDictionary.Add(bone, null);
             }
         }
-
+        //create dictionary of sensor bones
         PortBonesDictionary = new Dictionary<int, Transform>
         {
             { 10000, bonesDictionary[HumanBodyBones.LeftUpperArm] },
@@ -46,33 +48,79 @@ public class AvatarController : MonoBehaviour
         };
     }
 
-    void Update()
+    public void CreateServer()
     {
-        AssignData();
-    }
-
-    /// <summary>
-    /// assiging data to specific bones, got from Source.GetData()
-    /// <see cref="IDataSource"/>
-    /// </summary>
-    void AssignData() 
-    {
-        bonesDictionary[currentDataSource.GetData().Limb].rotation = currentDataSource.GetData().Rotation;
-    }
-
-    /// <summary>
-    /// changes the source of data, activated in the interface by a user
-    /// </summary>
-    public void ChangeDataSource()
-    {
-        if (currentDataSource == generatedDataSource)
+        if ( discoveryCoroutine != null )
         {
-            currentDataSource = manualDataSource;
+            Debug.Log("corutine null");
+            return;  // Note: Sensor discovery coroutine doesn't support cancellation so we have to return when multiple attempts are made
         }
+        Debug.Log("corutine discoverSensors");
+        discoveryCoroutine = StartCoroutine( DiscoverSensors() );
+    }
 
-        else
+    IEnumerator DiscoverSensors()
+    {
+        yield return sensorManager.DiscoverSensors( 5000, ( result ) =>
         {
-            currentDataSource = generatedDataSource;
+            if ( result != null )
+            {
+                Debug.Log( $"Discovered {result.Count} sensors" );
+
+                AssignSensors( result );
+            }
+            else
+            {
+                Debug.LogWarning( "Sensor discovery failed" );
+            }
+        } );
+
+        discoveryCoroutine = null;
+    }
+
+    /// <summary>
+    /// deleting sensors that are not controlling any limb, not allowing to create handles
+    /// </summary>
+    /// <param name="sensors"></param>
+    void SensorClearing(IList<ISensorInfo> sensors)
+    {
+        MapBones();
+        foreach (ISensorInfo sensor in sensors)
+        {
+            if (!PortBonesDictionary.ContainsKey(sensor.GetHashCode()))
+            {
+                sensors.Remove(sensor);
+            }
+        }
+    }
+
+    void AssignSensors( IList<ISensorInfo> infos )
+    {
+        SensorClearing( infos );
+
+        var handles = sensorManager.ConnectToSensors( infos );
+
+        for ( int i = 0; i < handles.Count; i++ )
+        {
+            if (PortBonesDictionary.ContainsKey(infos[i].GetHashCode()))
+            {
+                StartCoroutine(RotateBone(handles[i], PortBonesDictionary[infos[i].GetHashCode()]));
+            }
+        }
+    }
+
+    IEnumerator RotateBone( ISensorHandle handle, Transform transform )
+    {
+        yield return new WaitUntil( () => handle.CanGetDatagram );
+
+        while ( handle.IsConnectionOpen )
+        {
+            var rotation = handle.GetDatagram().Rotation;
+            // Debug.Log( $"Got rotation: {rotation}; (x: {rotation.eulerAngles.x}; y: {rotation.eulerAngles.y}; z: {rotation.eulerAngles.z}" );
+
+            transform.rotation = rotation;
+
+            yield return null;
         }
     }
 }
