@@ -16,8 +16,8 @@ public class AvatarController : MonoBehaviour
     /// dictionary containing all bones controlled by specific sensors, edited in code, controls other dictionaries <see cref="availableSensors"/>
     /// </summary>
     Dictionary<int, Transform> PortBonesDictionary;
-    Dictionary<int, Quaternion> CalibrationDictionary;
-    Dictionary<int, Quaternion> InitialDictionary;
+    Dictionary<Transform, Quaternion> InitialDictionary;
+    Dictionary<Transform, Quaternion> CalibrationDictionary;
     /// <summary>
     /// list of avialable sensors that control any bone from PortBonesDictionary
     /// </summary>
@@ -55,26 +55,29 @@ public class AvatarController : MonoBehaviour
 
     void GetInitialTransforms()
     {
-        InitialDictionary = new Dictionary<int, Quaternion>();
-        foreach(ISensorInfo sensor in availableSensors)
+        InitialDictionary = new Dictionary<Transform, Quaternion>
         {
-            InitialDictionary.Add(sensor.GetHashCode(), PortBonesDictionary[sensor.GetHashCode()].rotation);
-        }
+            { bonesDictionary[HumanBodyBones.LeftUpperLeg], bonesDictionary[HumanBodyBones.LeftUpperLeg].rotation },
+            { bonesDictionary[HumanBodyBones.LeftLowerLeg], bonesDictionary[HumanBodyBones.LeftLowerLeg].rotation }
+        };
     }
 
     /// <summary>
     /// calibration of the position, current rotation - premade rotation (starting) = Calibration
+    /// data.Rotation = Quaternion.Euler(data.Rotation.eulerAngles + delta.eulerAngles);
     /// </summary>
     void Calibre()
     {
-        CalibrationDictionary = new Dictionary<int, Quaternion>();
-        foreach(ISensorInfo sensor in availableSensors)
+        var quatDelta1 = Quaternion.Euler(bonesDictionary[HumanBodyBones.LeftUpperLeg].rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.LeftUpperLeg]].eulerAngles);
+        var quatDelta2 = Quaternion.Euler(bonesDictionary[HumanBodyBones.LeftLowerLeg].rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.LeftLowerLeg]].eulerAngles);
+        CalibrationDictionary = new Dictionary<Transform, Quaternion>
         {
-            Quaternion tempQuaternion = Quaternion.Euler (PortBonesDictionary[sensor.GetHashCode()].rotation.eulerAngles - InitialDictionary[sensor.GetHashCode()].eulerAngles);
+            { bonesDictionary[HumanBodyBones.LeftUpperLeg], quatDelta1 },
+            { bonesDictionary[HumanBodyBones.LeftLowerLeg], quatDelta2 }
+        };
 
-            CalibrationDictionary.Add(sensor.GetHashCode(), tempQuaternion);
-        }
     }
+
     void AssignSensors( IList<ISensorInfo> infos )
     {
         SensorClearing( infos );
@@ -116,7 +119,7 @@ public class AvatarController : MonoBehaviour
         Debug.Log("maping bones");
 
         bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
-        //collects one by one bones from HumanBodyBones and Avatar, combines them, also if null
+        //collects one by one bones from HumanBodyBones and Avatar, combines them, even if null, one global dictionary allows to create smaller
         foreach (var bone in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
         {
             if (animatorComponent != null & animatorComponent.GetBoneTransform(bone) != null)
