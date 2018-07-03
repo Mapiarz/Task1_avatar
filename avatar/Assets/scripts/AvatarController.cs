@@ -43,8 +43,8 @@ public class AvatarController : MonoBehaviour
         //create dictionary of sensor bones
         PortBonesDictionary = new Dictionary<int, Transform>
         {
-            { 10000, bonesDictionary[HumanBodyBones.LeftUpperArm] },
-            { 10001, bonesDictionary[HumanBodyBones.LeftLowerArm] }
+            { 10000, bonesDictionary[HumanBodyBones.LeftUpperLeg] },
+            { 10001, bonesDictionary[HumanBodyBones.LeftLowerLeg] }
         };
     }
 
@@ -109,6 +109,12 @@ public class AvatarController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// due to differences in coordinate systems in the program and sensors, it is required to change axes
+    /// </summary>
+    /// <param name="handle"></param>
+    /// <param name="transform"></param>
+    /// <returns></returns>
     IEnumerator RotateBone( ISensorHandle handle, Transform transform )
     {
         yield return new WaitUntil( () => handle.CanGetDatagram );
@@ -118,7 +124,7 @@ public class AvatarController : MonoBehaviour
             var rotation = handle.GetDatagram().Rotation;
             // Debug.Log( $"Got rotation: {rotation}; (x: {rotation.eulerAngles.x}; y: {rotation.eulerAngles.y}; z: {rotation.eulerAngles.z}" );
 
-            transform.rotation = rotation;
+            transform.rotation = Quaternion.Euler(rotation.eulerAngles.z, rotation.eulerAngles.x, rotation.eulerAngles.y);
 
             yield return null;
         }
