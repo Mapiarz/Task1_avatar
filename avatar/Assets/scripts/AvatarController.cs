@@ -124,7 +124,7 @@ public class AvatarController : MonoBehaviour
             var rotation = handle.GetDatagram().Rotation;
             // Debug.Log( $"Got rotation: {rotation}; (x: {rotation.eulerAngles.x}; y: {rotation.eulerAngles.y}; z: {rotation.eulerAngles.z}" );
 
-            transform.rotation = Quaternion.Euler(rotation.eulerAngles.z, rotation.eulerAngles.x, rotation.eulerAngles.y);
+            transform.rotation = Quaternion.Euler(-(rotation.eulerAngles.z-90), rotation.eulerAngles.y, rotation.eulerAngles.x);
 
             yield return null;
         }
