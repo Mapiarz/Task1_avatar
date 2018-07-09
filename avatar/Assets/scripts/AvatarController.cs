@@ -114,7 +114,10 @@ public class AvatarController : MonoBehaviour
         PortBonesDictionary = new Dictionary<int, Transform>
         {
             { 10000, bonesDictionary[HumanBodyBones.LeftUpperLeg] },
-            { 10001, bonesDictionary[HumanBodyBones.LeftLowerLeg] }
+            { 10001, bonesDictionary[HumanBodyBones.LeftLowerLeg] },
+            { 10002, bonesDictionary[HumanBodyBones.RightUpperLeg] },
+            { 10003, bonesDictionary[HumanBodyBones.RightLowerLeg] },
+            { 10004, bonesDictionary[HumanBodyBones.Hips] }
         };
     }
 
@@ -127,7 +130,10 @@ public class AvatarController : MonoBehaviour
         InitialDictionary = new Dictionary<Transform, Quaternion>
         {
             { bonesDictionary[HumanBodyBones.LeftUpperLeg], bonesDictionary[HumanBodyBones.LeftUpperLeg].rotation },
-            { bonesDictionary[HumanBodyBones.LeftLowerLeg], bonesDictionary[HumanBodyBones.LeftLowerLeg].rotation }
+            { bonesDictionary[HumanBodyBones.LeftLowerLeg], bonesDictionary[HumanBodyBones.LeftLowerLeg].rotation },
+            { bonesDictionary[HumanBodyBones.RightUpperLeg], bonesDictionary[HumanBodyBones.RightUpperLeg].rotation },
+            { bonesDictionary[HumanBodyBones.RightLowerLeg], bonesDictionary[HumanBodyBones.RightLowerLeg].rotation },
+            { bonesDictionary[HumanBodyBones.Hips], bonesDictionary[HumanBodyBones.Hips].rotation }
         };
         Debug.Log(InitialDictionary[bonesDictionary[HumanBodyBones.LeftUpperLeg]].eulerAngles);
     }
@@ -140,10 +146,16 @@ public class AvatarController : MonoBehaviour
     {
         var quatDelta1 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.LeftUpperLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.LeftUpperLeg]].eulerAngles);
         var quatDelta2 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.LeftLowerLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.LeftLowerLeg]].eulerAngles);
+        var quatDelta3 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.RightUpperLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.RightUpperLeg]].eulerAngles);
+        var quatDelta4 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.RightLowerLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.RightLowerLeg]].eulerAngles);
+        var quatDelta5 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.Hips).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.Hips]].eulerAngles);
         CalibrationDictionary = new Dictionary<Transform, Quaternion>
         {
             { bonesDictionary[HumanBodyBones.LeftUpperLeg], quatDelta1 },
-            { bonesDictionary[HumanBodyBones.LeftLowerLeg], quatDelta2 }
+            { bonesDictionary[HumanBodyBones.LeftLowerLeg], quatDelta2 },          
+            { bonesDictionary[HumanBodyBones.RightUpperLeg], quatDelta3 },
+            { bonesDictionary[HumanBodyBones.RightLowerLeg], quatDelta4 },
+            { bonesDictionary[HumanBodyBones.Hips], quatDelta5 }
         };
 
     }
