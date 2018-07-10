@@ -6,7 +6,7 @@
 public class UiScripts : MonoBehaviour {
 
     public GameObject button, sliders;
-    public AvatarController controller;
+    public OldAvatarController controller;
 
     /// <summary>
     /// bool responsible for changing state of UI elements to opposite
