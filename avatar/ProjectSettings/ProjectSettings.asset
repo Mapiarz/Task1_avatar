@@ -617,7 +617,7 @@ PlayerSettings:
   cloudServicesEnabled:
     UNet: 1
   facebookSdkVersion: 7.9.4
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 3
   cloudProjectId: 74799538-f0d9-4e9d-997f-f50c9474e645
   projectName: avatar
   organizationId: lewtrocki

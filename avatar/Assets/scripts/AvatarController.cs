@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class AvatarController : MonoBehaviour
 {
@@ -15,17 +16,53 @@ public class AvatarController : MonoBehaviour
     /// <summary>
     /// dictionary containing all bones controlled by specific sensors, edited in code, controls other dictionaries <see cref="availableSensors"/>
     /// </summary>
-    Dictionary<int, Transform> PortBonesDictionary;
+    Dictionary<int, Transform> portBonesDictionary;
     /// <summary>
     /// containing initial position of the avatar, standing still
     /// </summary>
-    Dictionary<Transform, Quaternion> InitialDictionary;
+    Dictionary<Transform, Quaternion> initialDictionary;
     /// <summary>
     /// containing offset of every bone
     /// </summary>
-    Dictionary<Transform, Quaternion> CalibrationDictionary;
+    Dictionary<Transform, Quaternion> calibrationDictionary;
 
-    public void CreateServer()
+    private void Start()
+    {
+        Assert.IsNotNull(animatorComponent, "Animator not found");
+        MapBones();
+    }
+
+    /// <summary>
+    /// finding all bones in the avatar, assigning bones to ports
+    /// </summary>
+    void MapBones()
+    {
+        bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
+        //collects one by one bones from HumanBodyBones and Avatar, combines them, even if null, one global dictionary allows to create smaller
+        foreach (var bone in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
+        {
+            if (animatorComponent.GetBoneTransform(bone) != null)
+            {
+                bonesDictionary.Add(bone, animatorComponent.GetBoneTransform(bone));
+            }
+
+            else
+            {
+                bonesDictionary.Add(bone, null);
+            }
+        }
+        //create dictionary of sensor bones
+        portBonesDictionary = new Dictionary<int, Transform>
+        {
+            { 10000, bonesDictionary[HumanBodyBones.LeftUpperLeg] },
+            { 10001, bonesDictionary[HumanBodyBones.LeftLowerLeg] },
+            { 10002, bonesDictionary[HumanBodyBones.RightUpperLeg] },
+            { 10003, bonesDictionary[HumanBodyBones.RightLowerLeg] },
+            { 10004, bonesDictionary[HumanBodyBones.Hips] }
+        };
+    }
+
+    public void DiscoverServers()
     {
         if ( discoveryCoroutine != null )
         {
@@ -61,16 +98,14 @@ public class AvatarController : MonoBehaviour
     /// <param name="infos"></param>
     void AssignSensors( IList<ISensorInfo> infos )
     {
-        SensorClearing( infos );
+        infos = SensorClearing( infos );
 
         var handles = sensorManager.ConnectToSensors( infos );
 
         for ( int i = 0; i < handles.Count; i++ )
         {
-            if (PortBonesDictionary.ContainsKey(infos[i].GetHashCode()))
-            {
-                StartCoroutine(RotateBone(handles[i], PortBonesDictionary[infos[i].GetHashCode()]));
-            }
+            Assert.IsTrue(portBonesDictionary.ContainsKey(infos[i].GetHashCode()), "Sensor not mapped");
+            StartCoroutine(RotateBone(handles[i], portBonesDictionary[infos[i].GetHashCode()]));
         }
     }
 
@@ -78,47 +113,17 @@ public class AvatarController : MonoBehaviour
     /// deleting sensors that are not controlling any limb
     /// </summary>
     /// <param name="sensors"></param>
-    void SensorClearing(IList<ISensorInfo> sensors)
+    IList<ISensorInfo> SensorClearing(IList<ISensorInfo> sensors)
     {
-        MapBones();
         foreach (ISensorInfo sensor in sensors)
         {
-            if (!PortBonesDictionary.ContainsKey(sensor.GetHashCode()))
+            if (!portBonesDictionary.ContainsKey(sensor.GetHashCode()))
             {
                 sensors.Remove(sensor);
             }
         }
         GetInitialTransforms();
-    }
-
-    /// <summary>
-    /// finding all bones in the avatar, assigning bones to ports
-    /// </summary>
-    void MapBones()
-    {
-        bonesDictionary = new Dictionary<HumanBodyBones, Transform>();
-        //collects one by one bones from HumanBodyBones and Avatar, combines them, even if null, one global dictionary allows to create smaller
-        foreach (var bone in (HumanBodyBones[])System.Enum.GetValues(typeof(HumanBodyBones)))
-        {
-            if (animatorComponent != null & animatorComponent.GetBoneTransform(bone) != null)
-            {
-                bonesDictionary.Add(bone, animatorComponent.GetBoneTransform(bone));
-            }
-
-            else
-            {
-                bonesDictionary.Add(bone, null);
-            }
-        }
-        //create dictionary of sensor bones
-        PortBonesDictionary = new Dictionary<int, Transform>
-        {
-            { 10000, bonesDictionary[HumanBodyBones.LeftUpperLeg] },
-            { 10001, bonesDictionary[HumanBodyBones.LeftLowerLeg] },
-            { 10002, bonesDictionary[HumanBodyBones.RightUpperLeg] },
-            { 10003, bonesDictionary[HumanBodyBones.RightLowerLeg] },
-            { 10004, bonesDictionary[HumanBodyBones.Hips] }
-        };
+        return sensors;
     }
 
     /// <summary>
@@ -127,7 +132,7 @@ public class AvatarController : MonoBehaviour
     void GetInitialTransforms()
     {
 
-        InitialDictionary = new Dictionary<Transform, Quaternion>
+        initialDictionary = new Dictionary<Transform, Quaternion>
         {
             { bonesDictionary[HumanBodyBones.LeftUpperLeg], bonesDictionary[HumanBodyBones.LeftUpperLeg].rotation },
             { bonesDictionary[HumanBodyBones.LeftLowerLeg], bonesDictionary[HumanBodyBones.LeftLowerLeg].rotation },
@@ -135,27 +140,40 @@ public class AvatarController : MonoBehaviour
             { bonesDictionary[HumanBodyBones.RightLowerLeg], bonesDictionary[HumanBodyBones.RightLowerLeg].rotation },
             { bonesDictionary[HumanBodyBones.Hips], bonesDictionary[HumanBodyBones.Hips].rotation }
         };
-        Debug.Log(InitialDictionary[bonesDictionary[HumanBodyBones.LeftUpperLeg]].eulerAngles);
+        Debug.Log(initialDictionary[bonesDictionary[HumanBodyBones.LeftUpperLeg]].eulerAngles);
     }
 
     /// <summary>
     /// <see cref="CalibrationDictionary"/>
     /// callback from button
     /// </summary>
-    public void Calibre()
+    public void Calibrate()
     {
-        var quatDelta1 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.LeftUpperLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.LeftUpperLeg]].eulerAngles);
-        var quatDelta2 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.LeftLowerLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.LeftLowerLeg]].eulerAngles);
-        var quatDelta3 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.RightUpperLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.RightUpperLeg]].eulerAngles);
-        var quatDelta4 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.RightLowerLeg).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.RightLowerLeg]].eulerAngles);
-        var quatDelta5 = Quaternion.Euler(animatorComponent.GetBoneTransform(HumanBodyBones.Hips).rotation.eulerAngles - InitialDictionary[bonesDictionary[HumanBodyBones.Hips]].eulerAngles);
-        CalibrationDictionary = new Dictionary<Transform, Quaternion>
+        var currentRotation1 = animatorComponent.GetBoneTransform(HumanBodyBones.LeftUpperLeg).rotation;
+        var currentRotation2 = animatorComponent.GetBoneTransform(HumanBodyBones.LeftLowerLeg).rotation;
+        var currentRotation3 = animatorComponent.GetBoneTransform(HumanBodyBones.RightUpperLeg).rotation;
+        var currentRotation4 = animatorComponent.GetBoneTransform(HumanBodyBones.RightLowerLeg).rotation;
+        var currentRotation5 = animatorComponent.GetBoneTransform(HumanBodyBones.Hips).rotation;
+
+        var initialRotation1 = initialDictionary[bonesDictionary[HumanBodyBones.LeftUpperLeg]];
+        var initialRotation2 = initialDictionary[bonesDictionary[HumanBodyBones.LeftLowerLeg]];
+        var initialRotation3 = initialDictionary[bonesDictionary[HumanBodyBones.RightUpperLeg]];
+        var initialRotation4 = initialDictionary[bonesDictionary[HumanBodyBones.RightLowerLeg]];
+        var initialRotation5 = initialDictionary[bonesDictionary[HumanBodyBones.Hips]];
+
+        var deltaRotation1 = Quaternion.Euler(currentRotation1.eulerAngles - initialRotation1.eulerAngles);
+        var deltaRotation2 = Quaternion.Euler(currentRotation2.eulerAngles - initialRotation2.eulerAngles);
+        var deltaRotation3 = Quaternion.Euler(currentRotation3.eulerAngles - initialRotation3.eulerAngles);
+        var deltaRotation4 = Quaternion.Euler(currentRotation4.eulerAngles - initialRotation4.eulerAngles);
+        var deltaRotation5 = Quaternion.Euler(currentRotation5.eulerAngles - initialRotation5.eulerAngles);
+
+        calibrationDictionary = new Dictionary<Transform, Quaternion>
         {
-            { bonesDictionary[HumanBodyBones.LeftUpperLeg], quatDelta1 },
-            { bonesDictionary[HumanBodyBones.LeftLowerLeg], quatDelta2 },          
-            { bonesDictionary[HumanBodyBones.RightUpperLeg], quatDelta3 },
-            { bonesDictionary[HumanBodyBones.RightLowerLeg], quatDelta4 },
-            { bonesDictionary[HumanBodyBones.Hips], quatDelta5 }
+            { bonesDictionary[HumanBodyBones.LeftUpperLeg], deltaRotation1 },
+            { bonesDictionary[HumanBodyBones.LeftLowerLeg], deltaRotation2 },          
+            { bonesDictionary[HumanBodyBones.RightUpperLeg], deltaRotation3 },
+            { bonesDictionary[HumanBodyBones.RightLowerLeg], deltaRotation4 },
+            { bonesDictionary[HumanBodyBones.Hips], deltaRotation5 }
         };
 
     }
@@ -173,14 +191,14 @@ public class AvatarController : MonoBehaviour
         while ( handle.IsConnectionOpen )
         {
             var rotation = handle.GetDatagram().Rotation;
-            if (CalibrationDictionary == null)
+            if (calibrationDictionary == null)
             {
                 //Debug.Log($"Got rotation: {rotation}; (x: {rotation.eulerAngles.x}; y: {rotation.eulerAngles.y}; z: {rotation.eulerAngles.z}");
                 transform.rotation = rotation;
             }
             else
             {
-                transform.rotation = Quaternion.Euler(rotation.eulerAngles - CalibrationDictionary[transform].eulerAngles);
+                transform.rotation = Quaternion.Euler(rotation.eulerAngles - calibrationDictionary[transform].eulerAngles);
             }
             yield return null;
         }

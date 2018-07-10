@@ -1760,7 +1760,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 785980629}
-        m_MethodName: Calibre
+        m_MethodName: Calibrate
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2486,7 +2486,7 @@ GameObject:
   - component: {fileID: 1319056591}
   - component: {fileID: 1319056590}
   m_Layer: 5
-  m_Name: CreateServers
+  m_Name: DiscoverServers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2551,7 +2551,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 785980629}
-        m_MethodName: CreateServer
+        m_MethodName: DiscoverServers
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2663,7 +2663,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Create Servers
+  m_Text: Discover Servers
 --- !u!222 &1402582827
 CanvasRenderer:
   m_ObjectHideFlags: 0
