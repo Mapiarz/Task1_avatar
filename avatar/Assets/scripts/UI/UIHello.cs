@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UI : MonoBehaviour {
+public class UIHello : MonoBehaviour, IWidget {
 
-    bool Active { get; set; }
+    public int Choice { get; set; }
+
+    public bool Active { get; set; }
     /// <summary>
     /// bool read by the master, ends the widget in the master
     /// </summary>
-    bool ReadyToSkip { get; set; }
+    public bool ReadyToSkip { get; set; }
 
     /// <summary>
     /// callback from button
@@ -44,5 +46,7 @@ public class UI : MonoBehaviour {
     void Awake()
     {
         ReadyToSkip = false;
+        Active = true;
+        Choice = 0;
     }
 }

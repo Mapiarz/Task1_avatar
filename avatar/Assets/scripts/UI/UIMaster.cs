@@ -3,8 +3,16 @@ using UnityEngine;
 
 public class UIMaster : MonoBehaviour {
 
-    IWidget[] widgets;
+    [SerializeField] IWidget[] widgets;
+    [SerializeField] UIHello uiHello;
+    [SerializeField] UIChoice uiChoice;
     int selectedExercise;
+
+    public void Awake()
+    {
+        widgets = new IWidget[] { uiHello, uiChoice };
+        StartCoroutine(ActivateWidget());
+    }
 
     /// <summary>
     /// coroutine responsible for activation and deactivation of screens
