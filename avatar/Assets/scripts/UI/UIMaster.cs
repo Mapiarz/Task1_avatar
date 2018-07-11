@@ -1,18 +1,20 @@
 ﻿using System.Collections;
 using UnityEngine;
-
+using DG.Tweening;
 
 public class UIMaster : MonoBehaviour {
 
     [SerializeField] IWidget[] widgets;
     [SerializeField] UIHello uiHello;
     [SerializeField] UIChoice uiChoice;
+    [SerializeField] UIDetect uiDetect;
+    [SerializeField] GameObject quad;
     int selectedExercise;
 
     CanvasGroup alteredPanel;
     public void Awake()
     {
-        widgets = new IWidget[] { uiHello, uiChoice };
+        widgets = new IWidget[] { uiHello, uiChoice, uiDetect };
         StartCoroutine(ActivateWidget());
     }
 
@@ -22,10 +24,10 @@ public class UIMaster : MonoBehaviour {
     /// <returns></returns>
     IEnumerator ActivateWidget()
     {
-        bool uiEnd = true;
+        bool uiEnd = false;
         int currentWidget = 0;
-
-        while (uiEnd)
+        Debug.Log("korutyna");
+        while (!uiEnd)
         {
             if (widgets[currentWidget].ReadyToSkip)
             {
@@ -33,18 +35,28 @@ public class UIMaster : MonoBehaviour {
                 {
                     selectedExercise = widgets[currentWidget].Choice;
                 }
+
                 widgets[currentWidget].Deactivate();
                 currentWidget++;
+                Debug.Log(widgets.Length - 1);
             }
 
             if (widgets[widgets.Length - 1].ReadyToSkip)
             {
-                uiEnd = false;
+                Debug.Log("tak");
+                uiEnd = true;
+                Sequence appear = DOTween.Sequence();
+                appear.PrependInterval(1);
+                appear.Append(quad.GetComponent<Renderer>().material.DOFade(0, 1f));
             }
 
             else
             {
-                widgets[currentWidget].Activate();
+                if (!widgets[currentWidget].Active)
+                {
+                    widgets[currentWidget].Activate();
+                }
+
             }
 
             yield return null;
