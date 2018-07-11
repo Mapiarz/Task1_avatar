@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIChoice : MonoBehaviour {
+public class UIChoice : MonoBehaviour, IWidget
+{
 
     /// <summary>
     /// ends the widget in the master, access from master
     /// </summary>
-    public bool ReadyToSkip;
+    public bool ReadyToSkip { get; set; }
 
     /// <summary>
     /// choosen exercise, access from master
     /// </summary>
-    public int choice;
+    public int Choice { get; set; }
 
     /// <summary>
     /// callback from button
@@ -21,6 +22,8 @@ public class UIChoice : MonoBehaviour {
     {
         ReadyToSkip = true;
     }
+
+    public bool Active { get; set; }
 
     /// <summary>
     /// return to beginning
@@ -45,7 +48,7 @@ public class UIChoice : MonoBehaviour {
     /// </summary>
     public void GetChoice1()
     {
-        choice = 1;
+        Choice = 1;
     }
 
     /// <summary>
@@ -53,6 +56,6 @@ public class UIChoice : MonoBehaviour {
     /// </summary>
     public void GetChoice2()
     {
-        choice = 2;
+        Choice = 2;
     }
 }

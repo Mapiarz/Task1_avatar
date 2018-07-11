@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface IWidget
+﻿public interface IWidget
 {
 
     /// <summary>
@@ -13,7 +9,9 @@ public interface IWidget
     /// <summary>
     /// choosen exercise, access from master
     /// </summary>
-    int Choice { get; }
+    int Choice { get; set; }
+
+    bool Active { get; set; }
 
     void Activate();
 

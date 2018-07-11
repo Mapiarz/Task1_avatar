@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UI : MonoBehaviour {
+
+    bool Active { get; set; }
     /// <summary>
     /// bool read by the master, ends the widget in the master
     /// </summary>
-    public bool ReadyToSkip;
+    bool ReadyToSkip { get; set; }
 
     /// <summary>
     /// callback from button
@@ -27,11 +29,13 @@ public class UI : MonoBehaviour {
     public void Activate()
     {
         gameObject.SetActive(true);
+        Active = true;
     }
 
     public void Deactivate()
     {
         gameObject.SetActive(false);
+        Active = false;
     }
 
     /// <summary>
