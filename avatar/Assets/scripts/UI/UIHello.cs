@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class UIHello : MonoBehaviour, IWidget {
 
@@ -32,19 +33,23 @@ public class UIHello : MonoBehaviour, IWidget {
     {
         gameObject.SetActive(true);
         Active = true;
+        Sequence appear = DOTween.Sequence();
+        appear.PrependInterval(1);
+        appear.Append(GetComponent<CanvasGroup>().DOFade(1, 1f));
     }
 
     public void Deactivate()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
         Active = false;
+        Sequence appear = DOTween.Sequence();
+        appear.Append(GetComponent<CanvasGroup>().DOFade(0, 1f));
+        appear.OnComplete(() => gameObject.SetActive(false));
     }
 
-    /// <summary>
-    /// set at start
-    /// </summary>
     void Awake()
     {
+        DOTween.Init();
         ReadyToSkip = false;
         Active = true;
         Choice = 0;

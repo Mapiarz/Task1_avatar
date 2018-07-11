@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+
 public class UIMaster : MonoBehaviour {
 
     [SerializeField] IWidget[] widgets;
@@ -8,6 +9,7 @@ public class UIMaster : MonoBehaviour {
     [SerializeField] UIChoice uiChoice;
     int selectedExercise;
 
+    CanvasGroup alteredPanel;
     public void Awake()
     {
         widgets = new IWidget[] { uiHello, uiChoice };
@@ -31,7 +33,6 @@ public class UIMaster : MonoBehaviour {
                 {
                     selectedExercise = widgets[currentWidget].Choice;
                 }
-
                 widgets[currentWidget].Deactivate();
                 currentWidget++;
             }

@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DG.Tweening;
 
 public class UIChoice : MonoBehaviour, IWidget
 {
@@ -36,11 +35,18 @@ public class UIChoice : MonoBehaviour, IWidget
     public void Activate()
     {
         gameObject.SetActive(true);
+        Active = true;
+        Sequence appear = DOTween.Sequence();
+        appear.PrependInterval(1);
+        appear.Append(GetComponent<CanvasGroup>().DOFade(1, 1f));
     }
 
     public void Deactivate()
     {
-        gameObject.SetActive(false);
+        Active = false;
+        Sequence appear = DOTween.Sequence();
+        appear.Append(GetComponent<CanvasGroup>().DOFade(0, 1f));
+        appear.OnComplete(() => gameObject.SetActive(false));
     }
 
     /// <summary>
@@ -57,5 +63,13 @@ public class UIChoice : MonoBehaviour, IWidget
     public void GetChoice2()
     {
         Choice = 2;
+    }
+
+    void Awake()
+    {
+        DOTween.Init();
+        ReadyToSkip = false;
+        Active = true;
+        Choice = 0;
     }
 }
