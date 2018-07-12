@@ -6,7 +6,8 @@ using UnityEngine.Assertions;
 
 public class AvatarController : MonoBehaviour
 {
-    public bool serversFound;
+    public bool discoveryFinished;
+    public int numberOfSensors;
     [SerializeField] SensorManagerBehaviour sensorManager;
     [SerializeField] Animator animatorComponent;
     Coroutine discoveryCoroutine;
@@ -31,7 +32,6 @@ public class AvatarController : MonoBehaviour
     {
         Assert.IsNotNull(animatorComponent, "Animator not found");
         MapBones();
-        serversFound = false;
     }
 
     /// <summary>
@@ -66,6 +66,8 @@ public class AvatarController : MonoBehaviour
 
     public void DiscoverServers()
     {
+        discoveryFinished = false;
+
         if ( discoveryCoroutine != null )
         {
             Debug.Log("corutine null");
@@ -82,7 +84,7 @@ public class AvatarController : MonoBehaviour
             if ( result != null )
             {
                 Debug.Log( $"Discovered {result.Count} sensors" );
-                serversFound = true;
+                numberOfSensors = result.Count;
                 AssignSensors( result );
             }
             else
@@ -90,7 +92,7 @@ public class AvatarController : MonoBehaviour
                 Debug.LogWarning( "Sensor discovery failed" );
             }
         } );
-
+        discoveryFinished = true;
         discoveryCoroutine = null;
     }
 

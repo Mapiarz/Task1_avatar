@@ -4,18 +4,19 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-public class DetectWidget : BaseScreenWidget
+public class DetectScreenWidget : BaseScreenWidget
 {
-    [SerializeField] Button goToNextSlideButton;
     [SerializeField] Button discoverServersButton;
-    [SerializeField] AvatarController controller;
+    [SerializeField] AvatarController avatarController;
     [SerializeField] GameObject spinner;
+
+    int numberOfSensors;
 
     protected override void Awake()
     {
         base.Awake();
+        numberOfSensors = -1;
         spinner.SetActive(false);
-        goToNextSlideButton.interactable = false;
     }
 
     public void StartDiscoveryCoroutine()
@@ -29,23 +30,17 @@ public class DetectWidget : BaseScreenWidget
 
         discoverServersButton.interactable = false;
 
-        controller.DiscoverServers();
+        avatarController.DiscoverServers();
 
-        while(!controller.serversFound)
+        while(!avatarController.discoveryFinished)
         {
+            numberOfSensors = avatarController.numberOfSensors;
+            
             spinner.transform.Rotate(0, 0, 100f * Time.deltaTime);
             yield return null;
         }
 
-        discoverServersButton.interactable = true;
-        spinner.SetActive(false);
-        goToNextSlideButton.interactable = true;
-    }
-
-    public void FinishedDiscoveryGoToNextSlide()
-    {
-        Assert.IsTrue(controller.serversFound);
-
+        screenController.NumberOfSensors = numberOfSensors;
         GoToNextScreen();
     }
 }

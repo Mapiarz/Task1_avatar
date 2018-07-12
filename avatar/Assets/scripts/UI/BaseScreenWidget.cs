@@ -69,4 +69,9 @@ public abstract class BaseScreenWidget : MonoBehaviour
     {
         screenController.GoToNextScreen( this );
     }
+
+    protected void GoToPreviousScreen()
+    {
+        screenController.GoToPreviousScreen( this );
+    }
 }

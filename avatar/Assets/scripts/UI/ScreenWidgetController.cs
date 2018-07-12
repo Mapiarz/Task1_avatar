@@ -12,8 +12,9 @@ public class ScreenWidgetController : MonoBehaviour
     [SerializeField] List<BaseScreenWidget> screenWidgets;
 
     public ExerciseType SelectedExerciseType { get; set; } = ExerciseType.None;
+    public int NumberOfSensors { get; set; } = 0;
 
-    public void Awake()
+public void Awake()
     {
         Assert.IsNotNull( imageComponent );
         Assert.IsNotNull( screenWidgets );
@@ -80,5 +81,30 @@ public class ScreenWidgetController : MonoBehaviour
         {
             return null;
         }
+    }
+
+    public void GoToPreviousScreen(BaseScreenWidget screenWidget)
+    {
+        Assert.IsNotNull(screenWidget);
+
+        var previousScreen = GetPreviousScreenWidget(screenWidget);
+        if (previousScreen != null)
+        {
+            StartCoroutine(ScreenTransitionCoroutine(screenWidget, previousScreen));
+        }
+        else
+        {
+            StartCoroutine(CloseDownCoroutine(screenWidget));
+        }
+    }
+
+    BaseScreenWidget GetPreviousScreenWidget(BaseScreenWidget currentScreenWidget)
+    {
+        Assert.IsNotNull(currentScreenWidget);
+        Assert.IsTrue(screenWidgets.Contains(currentScreenWidget));
+
+        var indexOf = screenWidgets.IndexOf(currentScreenWidget);
+
+        return screenWidgets[indexOf - 1];
     }
 }
