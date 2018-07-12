@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -113,28 +113,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &21472966 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 100176, guid: ae23d50304c93b9418b65cec8f9fe954, type: 3}
-  m_PrefabInternal: {fileID: 58643240}
 --- !u!95 &21472967 stripped
 Animator:
   m_PrefabParentObject: {fileID: 9500000, guid: ae23d50304c93b9418b65cec8f9fe954,
     type: 3}
   m_PrefabInternal: {fileID: 58643240}
---- !u!114 &21472969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 21472966}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1766f18fc7e52e54292c251fc0515ef9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  generatedDataSource: {fileID: 0}
-  manualDataSource: {fileID: 0}
 --- !u!1 &27924640
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,7 +298,7 @@ GameObject:
   - component: {fileID: 86255293}
   - component: {fileID: 86255292}
   m_Layer: 5
-  m_Name: SkipButton
+  m_Name: GoToNextButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -333,7 +316,7 @@ RectTransform:
   m_Children:
   - {fileID: 1985680646}
   m_Father: {fileID: 261597714}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -379,8 +362,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261597719}
-        m_MethodName: SkipOnClick
+      - m_Target: {fileID: 261597715}
+        m_MethodName: FinishedDiscoveryGoToNextSlide
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -731,14 +714,14 @@ GameObject:
   - component: {fileID: 261597718}
   - component: {fileID: 261597717}
   - component: {fileID: 261597716}
-  - component: {fileID: 261597719}
+  - component: {fileID: 261597715}
   m_Layer: 5
   m_Name: DetectWidget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &261597714
 RectTransform:
   m_ObjectHideFlags: 0
@@ -749,10 +732,10 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 86255291}
   - {fileID: 1713290580}
-  - {fileID: 1319056589}
   - {fileID: 1188950214}
+  - {fileID: 86255291}
+  - {fileID: 1319056589}
   m_Father: {fileID: 1534788642}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -761,6 +744,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &261597715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 261597713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd980a527bc3cc549a951a3e0d35c408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screenController: {fileID: 1534788645}
+  canvasGroup: {fileID: 261597716}
+  fadeDuration: 0.5
+  goToNextSlideButton: {fileID: 86255292}
+  controller: {fileID: 785980629}
+  spinner: {fileID: 1188950215}
 --- !u!225 &261597716
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -805,20 +805,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 261597713}
---- !u!114 &261597719
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 261597713}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08b069c5997b4d841b75f45e82d7c561, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  image: {fileID: 1188950215}
-  controller: {fileID: 785980629}
-  skipButton: {fileID: 86255290}
 --- !u!1 &492121061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1524,7 +1510,7 @@ Prefab:
     - target: {fileID: 224047095149318838, guid: 6638213feab6a924fb942786c7cc54c1,
         type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224047095149318838, guid: 6638213feab6a924fb942786c7cc54c1,
         type: 2}
@@ -1693,7 +1679,7 @@ RectTransform:
   m_Children:
   - {fileID: 1402582825}
   m_Father: {fileID: 261597714}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1739,8 +1725,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261597719}
-        m_MethodName: OnDiscoverClick
+      - m_Target: {fileID: 261597715}
+        m_MethodName: StartDiscoveryCoroutine
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1946,6 +1932,7 @@ MonoBehaviour:
   screenWidgets:
   - {fileID: 92640210}
   - {fileID: 2040609870}
+  - {fileID: 261597715}
 --- !u!1 &1552642738
 GameObject:
   m_ObjectHideFlags: 0
@@ -2096,7 +2083,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 261597714}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
