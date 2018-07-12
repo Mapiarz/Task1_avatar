@@ -37,7 +37,6 @@ public class SummaryScreenWidget : BaseScreenWidget
                 expectedNumberOfSensors = 0;
                 break;
         }
-
         text.text = $"Connected to {numberOfSensors} Sensors. \n Expected {expectedNumberOfSensors} sensors. \n Continue?";
     }
 

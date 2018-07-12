@@ -6,10 +6,17 @@ using UnityEngine.Assertions;
 
 public class AvatarController : MonoBehaviour
 {
+    /// <summary>
+    /// sent to UIController
+    /// </summary>
     public bool discoveryFinished;
+    /// <summary>
+    /// sent to UIController
+    /// </summary>
     public int numberOfSensors;
     [SerializeField] SensorManagerBehaviour sensorManager;
     [SerializeField] Animator animatorComponent;
+
     Coroutine discoveryCoroutine;
     /// <summary>
     /// dictionary containing all bones inside avatar
@@ -27,10 +34,12 @@ public class AvatarController : MonoBehaviour
     /// containing offset of every bone
     /// </summary>
     Dictionary<Transform, Quaternion> calibrationDictionary;
+    private bool beginRotations;
 
     private void Start()
     {
         Assert.IsNotNull(animatorComponent, "Animator not found");
+        beginRotations = false;
         MapBones();
     }
 
@@ -106,7 +115,7 @@ public class AvatarController : MonoBehaviour
 
         var handles = sensorManager.ConnectToSensors( infos );
 
-        for ( int i = 0; i < handles.Count; i++ )
+        for (int i = 0; i < handles.Count; i++)
         {
             Assert.IsTrue(portBonesDictionary.ContainsKey(infos[i].GetHashCode()), "Sensor not mapped");
             StartCoroutine(RotateBone(handles[i], portBonesDictionary[infos[i].GetHashCode()]));
@@ -179,7 +188,6 @@ public class AvatarController : MonoBehaviour
             { bonesDictionary[HumanBodyBones.RightLowerLeg], deltaRotation4 },
             { bonesDictionary[HumanBodyBones.Hips], deltaRotation5 }
         };
-
     }
 
     /// <summary>
@@ -195,16 +203,25 @@ public class AvatarController : MonoBehaviour
         while ( handle.IsConnectionOpen )
         {
             var rotation = handle.GetDatagram().Rotation;
-            if (calibrationDictionary == null)
+            if (calibrationDictionary == null && beginRotations)
             {
                 //Debug.Log($"Got rotation: {rotation}; (x: {rotation.eulerAngles.x}; y: {rotation.eulerAngles.y}; z: {rotation.eulerAngles.z}");
                 transform.rotation = rotation;
             }
-            else
+            else if (calibrationDictionary != null && beginRotations)
             {
                 transform.rotation = Quaternion.Euler(rotation.eulerAngles - calibrationDictionary[transform].eulerAngles);
             }
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// starts writing sensors data to bones
+    /// callback from button
+    /// </summary>
+    public void BeginRotations()
+    {
+        beginRotations = true;
     }
 }
