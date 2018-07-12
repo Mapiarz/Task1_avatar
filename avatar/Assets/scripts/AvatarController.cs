@@ -94,6 +94,7 @@ public class AvatarController : MonoBehaviour
             {
                 Debug.Log( $"Discovered {result.Count} sensors" );
                 numberOfSensors = result.Count;
+                Debug.Log($"avatarController number {numberOfSensors}");
                 AssignSensors( result );
             }
             else

@@ -34,12 +34,11 @@ public class DetectScreenWidget : BaseScreenWidget
 
         while(!avatarController.discoveryFinished)
         {
-            numberOfSensors = avatarController.numberOfSensors;
-            
             spinner.transform.Rotate(0, 0, 100f * Time.deltaTime);
             yield return null;
         }
-
+        numberOfSensors = avatarController.numberOfSensors;
+        Debug.Log($"DetectScreenWidget number {numberOfSensors}");
         screenController.NumberOfSensors = numberOfSensors;
         GoToNextScreen();
     }
