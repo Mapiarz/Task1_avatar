@@ -8,15 +8,11 @@ public class InstructionsScreenWidget : BaseScreenWidget
     [SerializeField] Text text;
     ExerciseType exercise;
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
-    private void Update()
+    public override IEnumerator ShowCoroutine()
     {
         exercise = screenController.SelectedExerciseType;
         ChangeText();
+        yield return StartCoroutine(base.ShowCoroutine());
     }
 
     void ChangeText()
@@ -29,4 +25,3 @@ public class InstructionsScreenWidget : BaseScreenWidget
         GoToNextScreen();
     }
 }
-//Instructions how to use sensors in 

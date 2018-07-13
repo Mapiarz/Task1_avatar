@@ -12,11 +12,16 @@ public class DetectScreenWidget : BaseScreenWidget
 
     int numberOfSensors;
 
-    protected override void Awake()
+    /// <summary>
+    /// overriding allows another use of dicovery button if not all sensors were discovered
+    /// </summary>
+    /// <returns></returns>
+    public override IEnumerator ShowCoroutine()
     {
-        base.Awake();
         numberOfSensors = -1;
         spinner.SetActive(false);
+        discoverServersButton.interactable = true;
+        yield return StartCoroutine(base.ShowCoroutine());
     }
 
     public void StartDiscoveryCoroutine()
@@ -31,13 +36,14 @@ public class DetectScreenWidget : BaseScreenWidget
         discoverServersButton.interactable = false;
 
         avatarController.DiscoverServers();
-
+        //waits for flag from avatarController
         while(!avatarController.discoveryFinished)
         {
             spinner.transform.Rotate(0, 0, 100f * Time.deltaTime);
             yield return null;
         }
-        numberOfSensors = avatarController.numberOfSensors;
+        //assign number of discovered sensors to global variable in Widget Controller
+        numberOfSensors = avatarController.infos.Count;
         Debug.Log($"DetectScreenWidget number {numberOfSensors}");
         screenController.NumberOfSensors = numberOfSensors;
         GoToNextScreen();

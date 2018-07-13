@@ -37,7 +37,7 @@ public abstract class BaseScreenWidget : MonoBehaviour
         StartCoroutine( HideCoroutine() );
     }
 
-    public IEnumerator ShowCoroutine()
+    public virtual IEnumerator ShowCoroutine()
     {
         Assert.IsFalse( IsShowing );
 

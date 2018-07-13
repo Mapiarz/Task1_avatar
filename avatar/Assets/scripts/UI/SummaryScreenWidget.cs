@@ -9,22 +9,18 @@ public class SummaryScreenWidget : BaseScreenWidget
     int numberOfSensors;
     ExerciseType exercise;
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
-    private void Update()
+    public override IEnumerator ShowCoroutine()
     {
         numberOfSensors = screenController.NumberOfSensors;
         exercise = screenController.SelectedExerciseType;
         ChangeText();
+        yield return StartCoroutine( base.ShowCoroutine() );
     }
 
     void ChangeText()
     {
         int expectedNumberOfSensors;
-
+        //switch function defines the number of sensors to a single exercise
         switch ((int)exercise)
         {
             case 1:
@@ -45,6 +41,9 @@ public class SummaryScreenWidget : BaseScreenWidget
         GoToNextScreen();
     }
 
+    /// <summary>
+    /// allows to return to sensor discovery
+    /// </summary>
     public void DisagreeAndGoToPreviousScreen()
     {
         GoToPreviousScreen();

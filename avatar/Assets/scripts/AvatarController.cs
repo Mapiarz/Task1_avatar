@@ -7,15 +7,15 @@ using UnityEngine.Assertions;
 public class AvatarController : MonoBehaviour
 {
     /// <summary>
-    /// sent to UIController
+    /// sent to UI
     /// </summary>
     public bool discoveryFinished;
-    /// <summary>
-    /// sent to UIController
-    /// </summary>
-    public int numberOfSensors;
     [SerializeField] SensorManagerBehaviour sensorManager;
     [SerializeField] Animator animatorComponent;
+    /// <summary>
+    /// lenght sent to UI
+    /// </summary>
+    public IList<ISensorInfo> infos;
 
     Coroutine discoveryCoroutine;
     /// <summary>
@@ -93,9 +93,7 @@ public class AvatarController : MonoBehaviour
             if ( result != null )
             {
                 Debug.Log( $"Discovered {result.Count} sensors" );
-                numberOfSensors = result.Count;
-                Debug.Log($"avatarController number {numberOfSensors}");
-                AssignSensors( result );
+                infos = result;
             }
             else
             {
@@ -108,11 +106,11 @@ public class AvatarController : MonoBehaviour
 
     /// <summary>
     /// assigns bones to sensors uses port numbers
+    /// callback from button
     /// </summary>
-    /// <param name="infos"></param>
-    void AssignSensors( IList<ISensorInfo> infos )
+    public void AssignSensors()
     {
-        infos = SensorClearing( infos );
+        infos = SensorClearing();
 
         var handles = sensorManager.ConnectToSensors( infos );
 
@@ -127,17 +125,17 @@ public class AvatarController : MonoBehaviour
     /// deleting sensors that are not controlling any limb
     /// </summary>
     /// <param name="sensors"></param>
-    IList<ISensorInfo> SensorClearing(IList<ISensorInfo> sensors)
+    IList<ISensorInfo> SensorClearing()
     {
-        foreach (ISensorInfo sensor in sensors)
+        foreach (ISensorInfo sensor in infos)
         {
             if (!portBonesDictionary.ContainsKey(sensor.GetHashCode()))
             {
-                sensors.Remove(sensor);
+                infos.Remove(sensor);
             }
         }
         GetInitialTransforms();
-        return sensors;
+        return infos;
     }
 
     /// <summary>
