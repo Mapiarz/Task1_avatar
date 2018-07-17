@@ -104,7 +104,7 @@ public void Awake()
         Assert.IsTrue(screenWidgets.Contains(currentScreenWidget));
 
         var indexOf = screenWidgets.IndexOf(currentScreenWidget);
-
+        Assert.AreNotEqual(0, screenWidgets.IndexOf(currentScreenWidget), "Last screen reached");
         return screenWidgets[indexOf - 1];
     }
 }
