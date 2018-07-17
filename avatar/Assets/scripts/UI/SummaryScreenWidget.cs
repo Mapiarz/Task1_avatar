@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Assertions;
+using Aisens;
 
 public class SummaryScreenWidget : BaseScreenWidget
 {
     [SerializeField] Text text;
+    [SerializeField] AvatarController avatarController;
     int numberOfSensors;
     ExerciseType exercise;
 
     public override IEnumerator ShowCoroutine()
     {
-        numberOfSensors = screenController.NumberOfSensors;
+        numberOfSensors = screenController.infos.Count;
         exercise = screenController.SelectedExerciseType;
         ChangeText();
         yield return StartCoroutine( base.ShowCoroutine() );
@@ -36,14 +39,16 @@ public class SummaryScreenWidget : BaseScreenWidget
         text.text = $"Connected to {numberOfSensors} Sensors. \n Expected {expectedNumberOfSensors} sensors. \n Continue?";
     }
 
+    /// <summary>
+    /// assigns sensors list to avatar controller
+    /// </summary>
     public void AcknowledgeAndGoToNextScreen()
     {
         GoToNextScreen();
+        avatarController.infos = screenController.infos;
+        avatarController.AssignSensors();
     }
 
-    /// <summary>
-    /// allows to return to sensor discovery
-    /// </summary>
     public void DisagreeAndGoToPreviousScreen()
     {
         GoToPreviousScreen();

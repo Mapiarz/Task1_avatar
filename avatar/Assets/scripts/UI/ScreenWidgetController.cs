@@ -5,14 +5,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
-
+using Aisens;
 public class ScreenWidgetController : MonoBehaviour
 {
     [SerializeField] Image imageComponent;
     [SerializeField] List<BaseScreenWidget> screenWidgets;
-
+    public IList<ISensorInfo> infos;
     public ExerciseType SelectedExerciseType { get; set; } = ExerciseType.None;
-    public int NumberOfSensors { get; set; } = 0;
 
 public void Awake()
     {
@@ -104,7 +103,7 @@ public void Awake()
         Assert.IsTrue(screenWidgets.Contains(currentScreenWidget));
 
         var indexOf = screenWidgets.IndexOf(currentScreenWidget);
-        Assert.AreNotEqual(0, screenWidgets.IndexOf(currentScreenWidget), "Last screen reached");
+
         return screenWidgets[indexOf - 1];
     }
 }
