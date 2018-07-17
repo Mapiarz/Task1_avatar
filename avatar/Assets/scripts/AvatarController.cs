@@ -25,7 +25,7 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     Dictionary<Transform, Quaternion> calibrationDictionary;
     ExerciseType currentExercise;
-
+    bool beginRotations;
     private void Start()
     {
         Assert.IsNotNull(animatorComponent, "Animator not found");
@@ -205,16 +205,25 @@ public class AvatarController : MonoBehaviour
         while ( handle.IsConnectionOpen )
         {
             var rotation = handle.GetDatagram().Rotation;
-            if (calibrationDictionary == null)
+            if (calibrationDictionary == null && beginRotations)
             {
                 //Debug.Log($"Got rotation: {rotation}; (x: {rotation.eulerAngles.x}; y: {rotation.eulerAngles.y}; z: {rotation.eulerAngles.z}");
                 transform.rotation = rotation;
             }
-            else
+            else if (calibrationDictionary != null && beginRotations)
             {
                 transform.rotation = Quaternion.Euler(rotation.eulerAngles - calibrationDictionary[transform].eulerAngles);
             }
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// starts writing sensor data to bones
+    /// callback from button
+    /// </summary>
+    public void BeginRotations()
+    {
+        beginRotations = true;
     }
 }

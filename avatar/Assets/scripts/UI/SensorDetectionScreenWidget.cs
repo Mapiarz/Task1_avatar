@@ -13,12 +13,11 @@ public class SensorDetectionScreenWidget : BaseScreenWidget
     [SerializeField] GameObject spinner;
 
     Coroutine discoveryCoroutine;
-    int numberOfSensors;
+    bool discoveryFinished;
 
     protected override void Awake()
     {
         base.Awake();
-        numberOfSensors = -1;
         spinner.SetActive(false);
     }
 
@@ -37,6 +36,10 @@ public class SensorDetectionScreenWidget : BaseScreenWidget
 
     IEnumerator DiscoverSensors()
     {
+        spinner.SetActive(true);
+        discoverServersButton.interactable = false;
+        discoveryFinished = false;
+        StartCoroutine(SpinnerRotation());
         yield return sensorManager.DiscoverSensors(5000, (result) =>
         {
             if (result != null)
@@ -44,14 +47,31 @@ public class SensorDetectionScreenWidget : BaseScreenWidget
                 Debug.Log($"Discovered {result.Count} sensors");
                 screenController.NumberOfSensors = result.Count;
                 avatarController.AssignSensors(result);
+                discoveryFinished = true;
             }
             else
             {
                 Debug.LogWarning("Sensor discovery failed");
+                discoveryFinished = true;
             }
         });
 
         discoveryCoroutine = null;
+        spinner.SetActive(false);
+        discoverServersButton.interactable = true;
         GoToNextScreen();
+    }
+
+    /// <summary>
+    /// starts the animation during discover sensor coroutine
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator SpinnerRotation()
+    {
+        while (!discoveryFinished)
+        {
+            spinner.transform.Rotate(0, 0, 100f * Time.deltaTime);
+            yield return null;
+        }
     }
 }
