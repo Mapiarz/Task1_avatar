@@ -6,8 +6,18 @@ using UnityEngine.Assertions;
 
 public class AvatarController : MonoBehaviour
 {
+    /// <summary>
+    /// sent to UI
+    /// </summary>
+    public bool discoveryFinished;
     [SerializeField] SensorManagerBehaviour sensorManager;
     [SerializeField] Animator animatorComponent;
+    /// <summary>
+    /// lenght sent to UI
+    /// </summary>
+    public IList<ISensorInfo> infos;
+
+    IList<ISensorHandle> handles;
     Coroutine discoveryCoroutine;
     /// <summary>
     /// dictionary containing all bones inside avatar
@@ -26,7 +36,7 @@ public class AvatarController : MonoBehaviour
     /// </summary>
     Dictionary<Transform, Quaternion> calibrationDictionary;
 
-    private void Start()
+    void Start()
     {
         Assert.IsNotNull(animatorComponent, "Animator not found");
         MapBones();
@@ -64,6 +74,8 @@ public class AvatarController : MonoBehaviour
 
     public void DiscoverServers()
     {
+        discoveryFinished = false;
+
         if ( discoveryCoroutine != null )
         {
             Debug.Log("corutine null");
@@ -80,50 +92,43 @@ public class AvatarController : MonoBehaviour
             if ( result != null )
             {
                 Debug.Log( $"Discovered {result.Count} sensors" );
-
-                AssignSensors( result );
+                infos = result;
             }
             else
             {
                 Debug.LogWarning( "Sensor discovery failed" );
             }
         } );
-
+        discoveryFinished = true;
         discoveryCoroutine = null;
     }
 
     /// <summary>
     /// assigns bones to sensors uses port numbers
+    /// callback from button
     /// </summary>
-    /// <param name="infos"></param>
-    void AssignSensors( IList<ISensorInfo> infos )
+    public void AssignSensors()
     {
-        infos = SensorClearing( infos );
+        infos = SensorClearing();
 
-        var handles = sensorManager.ConnectToSensors( infos );
-
-        for ( int i = 0; i < handles.Count; i++ )
-        {
-            Assert.IsTrue(portBonesDictionary.ContainsKey(infos[i].GetHashCode()), "Sensor not mapped");
-            StartCoroutine(RotateBone(handles[i], portBonesDictionary[infos[i].GetHashCode()]));
-        }
+        handles = sensorManager.ConnectToSensors( infos );
     }
 
     /// <summary>
     /// deleting sensors that are not controlling any limb
     /// </summary>
     /// <param name="sensors"></param>
-    IList<ISensorInfo> SensorClearing(IList<ISensorInfo> sensors)
+    IList<ISensorInfo> SensorClearing()
     {
-        foreach (ISensorInfo sensor in sensors)
+        foreach (ISensorInfo sensor in infos)
         {
             if (!portBonesDictionary.ContainsKey(sensor.GetHashCode()))
             {
-                sensors.Remove(sensor);
+                infos.Remove(sensor);
             }
         }
         GetInitialTransforms();
-        return sensors;
+        return infos;
     }
 
     /// <summary>
@@ -175,7 +180,16 @@ public class AvatarController : MonoBehaviour
             { bonesDictionary[HumanBodyBones.RightLowerLeg], deltaRotation4 },
             { bonesDictionary[HumanBodyBones.Hips], deltaRotation5 }
         };
+    }
 
+    public void StartWork()
+    {
+        Assert.IsNotNull(handles);
+        for (int i = 0; i < handles.Count; i++)
+        {
+            Assert.IsTrue(portBonesDictionary.ContainsKey(infos[i].GetHashCode()), "Sensor not mapped");
+            StartCoroutine(RotateBone(handles[i], portBonesDictionary[infos[i].GetHashCode()]));
+        }
     }
 
     /// <summary>
@@ -196,7 +210,7 @@ public class AvatarController : MonoBehaviour
                 //Debug.Log($"Got rotation: {rotation}; (x: {rotation.eulerAngles.x}; y: {rotation.eulerAngles.y}; z: {rotation.eulerAngles.z}");
                 transform.rotation = rotation;
             }
-            else
+            else if (calibrationDictionary != null)
             {
                 transform.rotation = Quaternion.Euler(rotation.eulerAngles - calibrationDictionary[transform].eulerAngles);
             }
